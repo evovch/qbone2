@@ -32,6 +32,7 @@ private:
     int rangeMin;
     int rangeMax;
     unsigned int id;
+    gpioInt *resetGpio;
     
     const unsigned int absoluteRangeMax = 100000;
 
@@ -40,7 +41,7 @@ private:
     L6470 *motor;
 
 public:
-    stepperSpi(ISPI *spiBus, unsigned int csnLine, l6470Setup ms, QObject *parent = 0);
+    stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpioNum, l6470Setup ms, QObject *parent = 0);
 
     void setRange(unsigned int min, unsigned int max);
     void setRangeMin(unsigned int n);

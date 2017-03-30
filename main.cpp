@@ -3,7 +3,7 @@
 // All Rights Reserved
 //
 
-#include <QtCore>
+#include <QApplication>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,7 +63,8 @@ std::string determineAddress() {
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
+
 /*
     cam = new bCamera(1, 12, 1, 14, 1, 16);
     qDebug() << "initCam";

@@ -19,6 +19,7 @@
 #include "btypes.h"
 #include "lvloop.h"
 #include "gpioint.h"
+#include "viewfindercamera.h"
 
 #include <thread>
 
@@ -27,7 +28,9 @@ class bCamera : public QObject {
 private:
     Camera *camera;
     GPContext *context;
-    
+
+    ViewfinderCamera *vfcam;
+
     gpioInt *afPin, *srPin, *usbPin;
     
     void resetUSB();
@@ -58,7 +61,7 @@ private:
     const unsigned int focusClientRange = 1000;
     const unsigned int focusCameraRange = 30000;
     
-    bool lvRunning, lvPaused, lvActive;
+    bool lvRunning, lvPaused, lvActive, vfActive;
     bool camIsNikon, camIsCanon;
     
     void lvLoop();
@@ -142,6 +145,7 @@ public:
     camInfoType getCamInfo();
 
     bool getLvActive();
+    bool getVfActive();
 
 signals:
     void frameReady(QByteArray);
@@ -151,6 +155,7 @@ signals:
 
 public slots:
     void onLvLoopFrameReady(QByteArray frame);
+    void onViewfinderCameraFrameReady(QByteArray frame);
     void onCameraFound();
     void onCameraLost();
     void onLvLoopEnd();

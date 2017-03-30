@@ -22,6 +22,7 @@
 //#include "stepperpru.h"
 //#include "stepperspi.h"
 #include "bus_protocol/fs_spi.h"
+#include "mainwidget.h"
 
 #include <thread>
 
@@ -45,6 +46,8 @@ public:
     
 private:
     stepperSpi *m_tilt, *m_pan, *m_zoom, *m_focus, *m_slider;
+
+    MainWidget *mw;
 
     ISPI *spiBus0, *spiBus1, *spiBus2, *spiBus3;
     

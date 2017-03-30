@@ -16,6 +16,61 @@
 #include <QDebug>
 //#include <turbojpeg.h>
 
+bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbPin, bool nolookup, QObject *parent) : QObject(parent) {
+    camActive = false;
+    lvActive = false;
+
+    camIsNikon = false;
+    camIsCanon = false;
+
+    viewfinderBusy = false;
+
+    setUsbPower(1);
+    usbSuspended = false;
+    devh = NULL;
+    flushTerminator = NULL;
+
+    initUSB();
+//    lookupCam();
+//    initCam();
+
+    afPin = new gpioInt(n_afPin);
+    srPin = new gpioInt(n_srPin);
+
+    afPin->setDir(1);
+    srPin->setDir(1);
+
+    if(n_usbPin != 0) {
+        usbPin = new gpioInt(n_usbPin);
+        usbPin->setDir(1);
+    }
+    else {
+        usbPin = NULL;
+    }
+
+//    enaPin->setValue(0);
+
+    pause = true;
+
+    camDownloadDir = "/emmc/images";
+
+    focusValue = 0;
+
+    qDebug() << "VFC";
+    vfcam = new ViewfinderCamera();
+    if(vfcam->start()) {
+        vfActive = true;
+        connect(vfcam, SIGNAL(frameReady(QByteArray)), this, SLOT(onViewfinderCameraFrameReady(QByteArray)));
+    }
+
+    if (!nolookup) {
+        camLookupThread = new std::thread( &bCamera::runCamLookupThread, this );
+        QObject::connect(this, SIGNAL(cameraFound()), this, SLOT(onCameraFound()));
+        QObject::connect(this, SIGNAL(cameraLost()), this, SLOT(onCameraLost()));
+    }
+}
+
+
 void bCamera::runCamLookupThread(void) {
     camLookupTerminator = false;
 
@@ -185,6 +240,11 @@ void bCamera::onLvLoopFrameReady(QByteArray frame){
     emit frameReady(frame);
 }
 
+void bCamera::onViewfinderCameraFrameReady(QByteArray frame){
+//    qDebug() << "reemintting frameRady(...)";
+    emit frameReady(frame);
+}
+
 void bCamera::freeCam(void){
     camIsNikon = false;
     camIsCanon = false;
@@ -226,53 +286,6 @@ bool bCamera::setUsbPower(unsigned int status) {
 unsigned int bCamera::getUsbPower(void) {
     if(!camActive)return(0);
     return(1);
-}
-
-bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbPin, bool nolookup, QObject *parent) : QObject(parent) {
-    camActive = false;
-    lvActive = false;
-
-    camIsNikon = false;
-    camIsCanon = false;
-
-    viewfinderBusy = false;
-
-    setUsbPower(1);
-    usbSuspended = false;
-    devh = NULL;
-    flushTerminator = NULL;
-
-    initUSB();
-//    lookupCam();
-//    initCam();
-    
-    afPin = new gpioInt(n_afPin);
-    srPin = new gpioInt(n_srPin);
-
-    afPin->setDir(1);
-    srPin->setDir(1);
-
-    if(n_usbPin != 0) {
-        usbPin = new gpioInt(n_usbPin);
-        usbPin->setDir(1);
-    }
-    else {
-        usbPin = NULL;
-    }
-    
-//    enaPin->setValue(0);
-    
-    pause = true;
-    
-    camDownloadDir = "/emmc/images";
-    
-    focusValue = 0;
-    
-    if (!nolookup) {
-        camLookupThread = new std::thread( &bCamera::runCamLookupThread, this );
-        QObject::connect(this, SIGNAL(cameraFound()), this, SLOT(onCameraFound()));
-        QObject::connect(this, SIGNAL(cameraLost()), this, SLOT(onCameraLost()));
-    }
 }
 
 void bCamera::nullFocus() {
@@ -663,6 +676,10 @@ bool bCamera::deactivateLiveView() {
 
 bool bCamera::getLvActive() {
     return lvActive;
+}
+
+bool bCamera::getVfActive() {
+    return vfActive;
 }
 
 void bCamera::captureGPIO(uint shutterSpeedMsec, uint holdMsec) {

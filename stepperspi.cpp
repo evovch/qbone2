@@ -20,8 +20,13 @@
 // driver 4: 110
 // driver 5: 001
 
-stepperSpi::stepperSpi(ISPI *spiBus, unsigned int csnLine, l6470Setup ms, QObject *parent) {
+stepperSpi::stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpioNum, l6470Setup ms, QObject *parent) {
     id = csnLine;
+
+    resetGpio = new gpioInt(resetGpioNum);
+    resetGpio->setDir(1);
+
+    resetGpio->setValue(1);
 
     motor = new L6470(spiBus, csnLine);
     motorStatus = new l6470Status;

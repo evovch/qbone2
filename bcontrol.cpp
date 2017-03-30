@@ -2,15 +2,22 @@
 //  bcontrol.cpp
 //  bone
 //
-//  Created by korytov on 07/05/14.
-//  Copyright (c) 2014 korytov. All rights reserved.
+//  Created by korytov on 26/03/16.
+//  Copyright (c) 2016 korytov. All rights reserved.
 //
 
 #include "bcontrol.h"
 #include <sstream>
+#include <QNetworkInterface>
 
 bControl::bControl(QObject *parent) : QObject(parent) {
 //    qRegisterMetaType<std::string>("std::string");
+
+    mw = new MainWidget();
+    mw->show();
+
+    QString  iface = QNetworkInterface::interfaceFromName("eth0").addressEntries().at(0).ip().toString();
+    mw->setIp(iface);
 
     pwl = new PWListener(49); //or 49
     QThread *threadPWL = new QThread();
@@ -53,12 +60,12 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     ms.kval_hold = 60;
     ms.kval_run = 65;
 
-    m_tilt = new stepperSpi(spiBus1, 2, ms);
+    m_tilt = new stepperSpi(spiBus1, 2, 83, ms);
  //   QThread *thread_tilt = new QThread();
  //   m_tilt->moveToThread(thread_tilt);
  //   thread_tilt->start();
 
-    m_pan  = new stepperSpi(spiBus2, 1, ms);
+    m_pan  = new stepperSpi(spiBus2, 1, 203, ms);
 //    QThread *thread_pan = new QThread();
 //    m_pan->moveToThread(thread_pan);
 //    thread_pan->start();
@@ -71,7 +78,7 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     ms.kval_hold = 100;
     ms.kval_run = ms.kval_hold;
 
-    m_zoom = new stepperSpi(spiBus0, 3, ms);
+    m_zoom = new stepperSpi(spiBus0, 3, 157, ms);
 
 //    QThread *thread_zoom = new QThread();
 //    m_zoom->moveToThread(thread_zoom);
@@ -81,7 +88,7 @@ bControl::bControl(QObject *parent) : QObject(parent) {
 
 //    m_focus = new stepperPru(5, pruDataMem_byte, 100, 0, 19, true, 8);
 
-    m_focus = new stepperSpi(spiBus3, 2, ms);;
+    m_focus = new stepperSpi(spiBus3, 2, 110, ms);;
     m_slider = m_focus;
 
     tl = new Timelapse();
@@ -709,6 +716,12 @@ bool bControl::senderHeavy() {
     r1.dev = "live_view";
     r1.key = "status";
     if(cam->getLvActive())r1.value = "on";
+        else r1.value = "off";
+    emit(dataReady(r1));
+
+    r1.dev = "viewfinder_cam";
+    r1.key = "status";
+    if(cam->getVfActive())r1.value = "on";
         else r1.value = "off";
     emit(dataReady(r1));
     
