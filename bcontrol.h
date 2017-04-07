@@ -57,7 +57,7 @@ private:
 
     PWListener *pwl, *pwl2;
 
-    bool liveViewOn;
+    bool liveViewOn, viewfinderCamOn;
     bCamera *cam;
 
     int currentConnectionsCount;

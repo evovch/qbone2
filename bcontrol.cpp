@@ -371,18 +371,21 @@ void bControl::inputCallback(tHash in){
         }
     }
 
-    if(dev == "live_view" && key == "toggle") {
-        if(!liveViewOn) {
-            if(cam->activateLiveView()) {
-                liveViewOn = true;
-            }
 
-        }
-        else {
-            if(cam->deactivateLiveView()) {
-                liveViewOn = false;
-            }
-        }
+
+    if(dev == "viewfinder_cam" && key == "toggle") {
+        cam->toggleViewfinderCam();
+
+        if(cam->getLvActive())liveViewOn=1;
+        if(cam->getVfActive())viewfinderCamOn=1;
+    }
+
+
+    if(dev == "live_view" && key == "toggle") {
+        cam->toggleLiveView();
+
+        if(cam->getLvActive())liveViewOn=1;
+        if(cam->getVfActive())viewfinderCamOn=1;
     }
     
     if(dev == "live_view" && key == "set_zoom") {

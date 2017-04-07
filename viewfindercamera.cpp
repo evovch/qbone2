@@ -1,20 +1,22 @@
 #include "viewfindercamera.h"
 
-#include <fstream>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <stdio.h>
-#include "viewfindercameracapture.h"
 
 #include <QDebug>
 
 
 ViewfinderCamera::ViewfinderCamera(QObject *parent) : QObject(parent)
 {
+    isRunning = false;
 }
 
 bool ViewfinderCamera::start(void){
+    if(isRunning)return;
+
     if((fd_vfcam = open("/dev/video1", O_RDWR)) < 0){
         qDebug() << "VF cam start: can't open FD";
         return(false);
@@ -95,18 +97,43 @@ bool ViewfinderCamera::start(void){
         return(false);
     }
 
-    ViewfinderCameraCapture *vfc = new ViewfinderCameraCapture(&fd_vfcam, buffer_start, &bufferinfo);
+    vfc_terminator = false;
+    vfc = new ViewfinderCameraCapture(&vfc_terminator, &fd_vfcam, buffer_start, &bufferinfo);
     connect(vfc, SIGNAL(frameCaptured(QByteArray)), this, SLOT(onFrameCaptured(QByteArray)));
+    connect(vfc, SIGNAL(finished()), this, SLOT(stop()));
     vfc->start();
+
+    isRunning = true;
 
     return(true);
 }
 
 bool ViewfinderCamera::stop(void){
+    if(!isRunning)return;
+
+    disconnect(vfc, SIGNAL(finished()), this, SLOT(stop()));
+
+    qDebug() << "terminating VFC thread";
+    vfc_terminator = true;
+    vfc->wait();
+    qDebug() << "VFC thread terminated";
+    delete(vfc);
+
     if(ioctl(fd_vfcam, VIDIOC_STREAMOFF, &type) < 0){
         qDebug() << "VF cam stop: VIDIOC_STREAMOFF";
-        return(false);
     }
+
+    if(close(fd_vfcam) < 0) {
+        qDebug() << "VF cam stop: can't close FD";
+    }
+
+    munmap(buffer_start, bufferinfo.length);
+
+    qDebug() << "VF cam stop: FD closed";
+
+    isRunning = false;
+
+    emit(stopped());
 
     return(true);
 }

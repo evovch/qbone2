@@ -92,6 +92,11 @@ public:
     
     bool activateLiveView();
     bool deactivateLiveView();
+    bool activateViewfinderCam();
+    bool deactivateViewfinderCam();
+
+    bool toggleLiveView();
+    bool toggleViewfinderCam();
 
     void initUSB();
     void freeUSB();
@@ -156,6 +161,7 @@ signals:
 public slots:
     void onLvLoopFrameReady(QByteArray frame);
     void onViewfinderCameraFrameReady(QByteArray frame);
+    void onViewfinderCameraStopped();
     void onCameraFound();
     void onCameraLost();
     void onLvLoopEnd();

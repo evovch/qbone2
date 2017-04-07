@@ -18,7 +18,9 @@
 
 bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbPin, bool nolookup, QObject *parent) : QObject(parent) {
     camActive = false;
+
     lvActive = false;
+    vfActive =  false;
 
     camIsNikon = false;
     camIsCanon = false;
@@ -56,12 +58,9 @@ bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbP
 
     focusValue = 0;
 
-    qDebug() << "VFC";
     vfcam = new ViewfinderCamera();
-    if(vfcam->start()) {
-        vfActive = true;
-        connect(vfcam, SIGNAL(frameReady(QByteArray)), this, SLOT(onViewfinderCameraFrameReady(QByteArray)));
-    }
+    connect(vfcam, SIGNAL(frameReady(QByteArray)), this, SLOT(onViewfinderCameraFrameReady(QByteArray)));
+    connect(vfcam, SIGNAL(stopped()), this, SLOT(onViewfinderCameraStopped()));
 
     if (!nolookup) {
         camLookupThread = new std::thread( &bCamera::runCamLookupThread, this );
@@ -986,5 +985,46 @@ void bCamera::downloadCameraDir(std::string dirname) {
     
 }
 
+bool bCamera::activateViewfinderCam() {
+    if(vfActive)return;
 
+    if(vfcam->start()) {
+        vfActive = true;
+        return(true);
+    }
 
+    return(false);
+}
+
+void bCamera::onViewfinderCameraStopped() {
+    vfActive = false;
+}
+
+bool bCamera::deactivateViewfinderCam() {
+    if(!vfActive)return;
+
+    if(vfcam->stop()) {
+        vfActive = false;
+        return(true);
+    }
+
+    return(false);
+}
+
+bool bCamera::toggleLiveView() {
+    if(!lvActive) {
+        deactivateViewfinderCam();
+        return activateLiveView();
+    }
+
+    return deactivateLiveView();
+}
+
+bool bCamera::toggleViewfinderCam() {
+    if(!vfActive) {
+        deactivateLiveView();
+        return activateViewfinderCam();
+    }
+
+    return deactivateViewfinderCam();
+}
