@@ -6,15 +6,21 @@
 //  Copyright (c) 2014 korytov. All rights reserved.
 //
 
-#include "bcamera.h"
-#include "libusb-1.0/libusb.h"
-#include <iostream>
-#include <fstream>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <iostream>
+#include <fstream>
+
 #include <QDebug>
+
+#include "libusb-1.0/libusb.h"
 //#include <turbojpeg.h>
+
+#include "bcamera.h"
+
+#include "viewfindercamera.h"
+#include "gpioint.h"
 
 bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbPin, bool nolookup, QObject *parent) : QObject(parent) {
     camActive = false;
@@ -68,7 +74,6 @@ bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbP
         QObject::connect(this, SIGNAL(cameraLost()), this, SLOT(onCameraLost()));
     }
 }
-
 
 void bCamera::runCamLookupThread(void) {
     camLookupTerminator = false;
@@ -200,7 +205,7 @@ void bCamera::onLvLoopTimer() {
 
     retval = gp_camera_capture_preview(camera, cf, context);
 
-    char *cfData;
+    const char *cfData;
     unsigned long int size;
     retval = gp_file_get_data_and_size (cf, &cfData, &size);
 
@@ -295,7 +300,6 @@ void bCamera::nullFocus() {
 
     setConfig("viewfinder", "1", 2);
     
-    
 //    activateLiveView();
 //    usleep(2 * 1000 * 1000);
     
@@ -303,8 +307,6 @@ void bCamera::nullFocus() {
     focusValue = 0;
     
 //    deactivateLiveView();
-
-    
 
     setConfig("viewfinder", "0", 2);
 }
@@ -358,7 +360,6 @@ unsigned int bCamera::getFocusValue() {
 void bCamera::initLiveView() {
 
 }
-
 
 void bCamera::setAutofocusarea(std::string value){
     if(camActive)lvLoopThreaded->incBlockers();
@@ -617,7 +618,7 @@ QByteArray bCamera::captureLvFrame(void) {
 
     retval = gp_camera_capture_preview(camera, cf, context);
 
-    char *cfData;
+    const char *cfData;
     unsigned long int size;
     retval = gp_file_get_data_and_size (cf, &cfData, &size);
 
@@ -796,7 +797,7 @@ void bCamera::capture() {
 
 
 void bCamera::getCameraFile(std::string filename) {
-    if(!camActive)return;
+    if (!camActive) return;
     
     CameraList *list;
     gp_list_new (&list);
@@ -806,7 +807,6 @@ void bCamera::getCameraFile(std::string filename) {
     CameraFilePath  *path;
     
     gp_camera_folder_list_files (camera, "/store_00020001/DCIM/231NC_D4", list, context);
-    
     
     int count = gp_list_count (list);
     std::cout << "count: " << count << "\r\n" << std::flush;
@@ -895,7 +895,7 @@ void bCamera::flushCamera(int downloadNumber, bool *camFlushTerminator) {
     lvLoopThreaded->incBlockers();
 
     flushTerminator = NULL;
-    if(camFlushTerminator != NULL)flushTerminator = camFlushTerminator;
+    if (camFlushTerminator != NULL) flushTerminator = camFlushTerminator;
     
     gp_camera_unref(camera);
     gp_camera_new(&camera);
@@ -917,13 +917,13 @@ void bCamera::downloadCameraDir(std::string dirname) {
     const char *dname, *fname;
     int fd, retval;
     CameraFile *file;
-    CameraFilePath  *path;
+    CameraFilePath *path;
     
     std::string pwdStr;
     
     
     pwd.push_back(dirname);
-    for (int i = 0; i < pwd.size(); i++) {
+    for (unsigned int i = 0; i < pwd.size(); i++) {
         pwdStr += pwd[i];
         pwdStr += "/";
     }
@@ -937,7 +937,7 @@ void bCamera::downloadCameraDir(std::string dirname) {
 
     QString mess;
     for (int j = fcount-1; j >= 0; j--) {
-        if(flushTerminator==true || downloadLimit==0)continue;
+        if (*flushTerminator==true || downloadLimit==0) continue;
             
         gp_list_get_name (flist, j, &fname);
 
@@ -986,14 +986,14 @@ void bCamera::downloadCameraDir(std::string dirname) {
 }
 
 bool bCamera::activateViewfinderCam() {
-    if(vfActive)return;
+    if (vfActive) return false;     //TODO return what?
 
     if(vfcam->start()) {
         vfActive = true;
-        return(true);
+        return true;
     }
 
-    return(false);
+    return false;
 }
 
 void bCamera::onViewfinderCameraStopped() {
@@ -1001,14 +1001,14 @@ void bCamera::onViewfinderCameraStopped() {
 }
 
 bool bCamera::deactivateViewfinderCam() {
-    if(!vfActive)return;
+    if (!vfActive) return false;     //TODO return what?
 
-    if(vfcam->stop()) {
+    if (vfcam->stop()) {
         vfActive = false;
-        return(true);
+        return true;
     }
 
-    return(false);
+    return false;
 }
 
 bool bCamera::toggleLiveView() {

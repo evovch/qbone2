@@ -2,8 +2,9 @@
 #define LVLOOP_H
 
 #include <QObject>
-#include "gphoto2/gphoto2.h"
 #include <QTimer>
+
+#include "gphoto2/gphoto2.h"
 
 class LvLoop : public QObject
 {

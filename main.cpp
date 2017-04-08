@@ -21,7 +21,7 @@
 
 #include <sys/types.h>
 #include <ifaddrs.h>
-#include <cstring>
+#include <cstring>      //TODO why <cstring> and not just <string>?
 #include <sys/socket.h>
 #include <netdb.h>
 
@@ -59,6 +59,8 @@ std::string determineAddress() {
             return std::string(host);
         }
     }
+    //TODO return something!
+    return std::string("");
 }
 
 int main(int argc, char *argv[])
@@ -77,34 +79,34 @@ int main(int argc, char *argv[])
 
     bool dontDaemonize = false;
     if (argc > 1 && std::string(argv[1]) == std::string("n")) {
-	printf("non-daemon\r\n");
- 	dontDaemonize = true;
+        printf("non-daemon\r\n");
+        dontDaemonize = true;
     }
 
     if(dontDaemonize == false) {
-	printf("daemonizing\r\n");
-    int pid, sid;
-    pid = fork();
+        printf("daemonizing\r\n");
+        int pid, sid;
+        pid = fork();
 
-    if(pid < 0) {
-        printf("Can't fork\r\n");
-        exit(1);
-    } else if(pid != 0) {
-        exit(0);
-    } 
+        if(pid < 0) {
+            printf("Can't fork\r\n");
+            exit(1);
+        } else if(pid != 0) {
+            exit(0);
+        }
 
-    sid = setsid();
+        sid = setsid();
 
-    if(sid < 0) {
-        printf("Can't setsid\r\n");
-        exit(1);
-    }
-    umask(0);
+        if(sid < 0) {
+            printf("Can't setsid\r\n");
+            exit(1);
+        }
+        umask(0);
 
-    chdir("/");
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
+        chdir("/");
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
     }
     
     std::ofstream out("/emmc/dkv2/bone.log", std::ofstream::app);
@@ -117,6 +119,7 @@ int main(int argc, char *argv[])
 
     signal(SIGPIPE, SIG_IGN);
     
+    // To enable correct finishing of the program using signals
     signal(SIGINT, &exitGraceful);
     signal(SIGTERM, &exitGraceful);
 
@@ -163,5 +166,5 @@ int main(int argc, char *argv[])
     LvTcpServer lvsrv;
     lvsrv.setCamera(cam);
 
-     return a.exec();
+    return a.exec();
 }

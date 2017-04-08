@@ -1,5 +1,7 @@
 #include "timelapse.h"
 
+#include "stepperspi.h"
+
 Timelapse::Timelapse(QObject *parent) :
     QObject(parent)
 {
@@ -16,10 +18,10 @@ void Timelapse::setCamera(bCamera *cam) {
 }
 
 void Timelapse::setMotors(stepperSpi *slider, stepperSpi *pan, stepperSpi *tilt, stepperSpi *zoom) {
-   motorSlider = slider;
-   motorPan = pan;
-   motorTilt = tilt;
-   motorZoom = zoom;
+    motorSlider = slider;
+    motorPan = pan;
+    motorTilt = tilt;
+    motorZoom = zoom;
 }
 
 void Timelapse::runLinear(limits l, uint fc, uint realtimeDelaySecs) {
@@ -38,10 +40,10 @@ void Timelapse::runLinear(limits l, uint fc, uint realtimeDelaySecs) {
     qDebug() << "snapZoom: " << snapZoom;
     qDebug() << "framesCount: " << framesCount;
 
-    if(snapSlider != 0)motorSlider->async_seek_blocking(l.minSlider);
-    if(snapPan != 0)motorPan->async_seek_blocking(l.minPan);
-    if(snapTilt != 0)motorTilt->async_seek_blocking(l.minTilt);
-    if(snapZoom != 0)motorZoom->async_seek_blocking(l.minZoom);
+    if (snapSlider != 0) motorSlider->async_seek_blocking(l.minSlider);
+    if (snapPan != 0) motorPan->async_seek_blocking(l.minPan);
+    if (snapTilt != 0) motorTilt->async_seek_blocking(l.minTilt);
+    if (snapZoom != 0) motorZoom->async_seek_blocking(l.minZoom);
 
     timer->start(realtimeDelaySecs * 1000);
     tlShooting = true;
@@ -62,10 +64,10 @@ void Timelapse::shot() {
 
     camera->captureGPIO(1000);
 
-    if(snapSlider != 0)motorSlider->pulse(snapSlider);
-    if(snapPan != 0)motorPan->pulse(snapPan);
-    if(snapTilt != 0)motorTilt->pulse(snapTilt);
-    if(snapZoom != 0)motorZoom->pulse(snapZoom);
+    if (snapSlider != 0) motorSlider->pulse(snapSlider);
+    if (snapPan != 0) motorPan->pulse(snapPan);
+    if (snapTilt != 0) motorTilt->pulse(snapTilt);
+    if (snapZoom != 0) motorZoom->pulse(snapZoom);
 
-    if(shotCount == framesCount)cancelShooting();
+    if (shotCount == framesCount) cancelShooting();
 }

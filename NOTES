@@ -1,0 +1,12 @@
+Order of #includes:
+C/C++
+Qt
+internal
+
+Get rid of different ways to print data - stdio, iostream, qDebug, etc
+
+In class header:
+first come public methods including (if public) constructor and destructor
+then - public data members
+then come protected methods and data members (if any)
+and in th end - private data members and methods (if any)

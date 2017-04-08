@@ -9,27 +9,31 @@
 #ifndef __bone__bcontrol__
 #define __bone__bcontrol__
 
+#include <iostream>
+#include <thread>
+
 #include <QObject>
 
-#include <iostream>
 #include "btypes.h"
-#include "bcamera.h"
+
 
 //#include "lvconn.h"
 //#include "lvconnfactory.h"
 #include "timelapse.h"
-#include "pwlistener.h"
-//#include "stepperpru.h"
-//#include "stepperspi.h"
-#include "bus_protocol/fs_spi.h"
-#include "mainwidget.h"
 
-#include <thread>
+#include "bus_protocol/fs_spi.h"
+
+class stepperSpi;
+class PWListener;
+class MainWidget;
+class bCamera;
 
 class bControl : public QObject {
     Q_OBJECT
+
 public:
     bControl(QObject *parent = 0);
+
     fixedPoints getFixedPoints(void);
     int getFixedPointsSize(void);
     void addFixedPoint(std::string id, fixedPoint fp);
@@ -39,9 +43,8 @@ public:
     void inputCallback(tHash in);
     void setCamera(bCamera *c);
     
-    unsigned int timelapseStatus();
+    unsigned int timelapseStatus(void);
     
-
     void setCurrentConnectionsCount(int c);
     
 private:
@@ -63,7 +66,6 @@ private:
     int currentConnectionsCount;
     
     int fpCounter;
-
 
 //    std::thread *tlThread;
     bool tlThreadTerminator;
@@ -92,7 +94,7 @@ private:
     void runLapseQbic(unsigned int frames, unsigned int secs, bool demo);
     
     void doRunTimelapseNew(bool demo);
-    void doStopTimelapseNew();
+    void doStopTimelapseNew(void);
 
 signals:
     void dataReady(tHash);
@@ -104,7 +106,6 @@ public slots:
     void onLogToClient(QString str);
     void onPWSignal(int num);
 
-
 };
 
-#endif /* defined(__bone__bcontrol__) */
+#endif // __bone__bcontrol__

@@ -17,7 +17,8 @@ ViewfinderCameraCapture::ViewfinderCameraCapture(bool *in_terminator, int *in_fd
 
 void ViewfinderCameraCapture::run(void)
 {
-    while(1){
+    while(1)
+    {
         if(*terminator)break;
         // Queue the next one.
         if(ioctl(*fd_vfcam, VIDIOC_QBUF, bufferinfo) < 0){

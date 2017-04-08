@@ -11,20 +11,17 @@ MainTcpServer::MainTcpServer(QObject *parent) :
 
     int rc = 0;
     while(rc < 5) {
-        if(!server->listen(QHostAddress("192.168.1.100"), 60000))
+        if(!server->listen(QHostAddress("127.0.0.1"), 60000))
         {
             qDebug() << "MAIN server could not start";
             std::cout << "MAIN server could not start: " << server->errorString().toStdString() << "\r\n";
-        }
-        else
-        {
+        } else {
             qDebug() << "MAIN server started!";
             std::cout << "MAIN server started\r\n";
 
             QObject::connect(server, SIGNAL(newConnection()),
                     this, SLOT(_onNewConnection()));
             return;
-
         }
 
         QThread::sleep(5);

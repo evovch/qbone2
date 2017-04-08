@@ -173,8 +173,6 @@ void stepperSpi::async_rotate(int dir) {
 
     qDebug() << "async_rotate at speed: " << speed;
 
-
-
     qDebug() << "motor should run";
 
     if(dir >= 0)motor->run(1, speed);

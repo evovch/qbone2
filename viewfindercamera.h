@@ -1,13 +1,21 @@
 #ifndef VIEWFINDERCAMERA_H
 #define VIEWFINDERCAMERA_H
 
-#include <QObject>
 #include <linux/videodev2.h>
-#include "viewfindercameracapture.h"
+
+#include <QObject>
+
+class ViewfinderCameraCapture;
 
 class ViewfinderCamera : public QObject
 {
     Q_OBJECT
+
+public:
+    explicit ViewfinderCamera(QObject *parent = 0);
+    //TODO destructor?
+
+    bool start(void);
 
 private:
     int fd_vfcam;
@@ -16,13 +24,9 @@ private:
     int type;
 
     ViewfinderCameraCapture *vfc;
+
     bool vfc_terminator;
     bool isRunning;
-
-public:
-    explicit ViewfinderCamera(QObject *parent = 0);
-
-    bool start(void);
 
 signals:
     void frameReady(QByteArray);
@@ -31,6 +35,7 @@ signals:
 public slots:
     void onFrameCaptured(QByteArray bytes);
     bool stop(void);
+
 };
 
 #endif // VIEWFINDERCAMERA_H

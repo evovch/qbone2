@@ -9,15 +9,16 @@
 #ifndef __bone__stepperspi__
 #define __bone__stepperspi__
 
-#include <QObject>
 #include <iostream>
+
+#include <QObject>
+
 #include "gpioint.h"
 #include "l6470/l6470.h"
 #include "stepperspiwatcher.h"
 #include "btypes.h"
 
-#endif /* defined(__bone__stepperspi__) */
-
+#endif // __bone__stepperspi__       //TODO why here and not at the end of the file?!
 
 class stepperSpi : public QObject {
     Q_OBJECT

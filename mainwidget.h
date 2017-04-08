@@ -13,9 +13,9 @@ class MainWidget : public QWidget
 
 public:
     explicit MainWidget(QWidget *parent = 0);
-    ~MainWidget();
+    ~MainWidget(void);
 
-    setIp(QString ip);
+    void setIp(QString ip);
 
 private:
     Ui::MainWidget *ui;

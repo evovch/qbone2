@@ -1,12 +1,12 @@
 #include "lvloop.h"
+
 #include <unistd.h>
 #include <QDebug>
 
 LvLoop::LvLoop(QObject *parent) :
     QObject(parent)
 {
-     isRunning = false;
-
+    isRunning = false;
     busy = false;
     isEnabled = false;
 
@@ -24,7 +24,7 @@ void LvLoop::onTimer(void) {
 }
 
 void LvLoop::enable() {
-    if(isEnabled)return;
+    if (isEnabled) return;
     qDebug() << "LvLoop::enable()";
     blockers = 0;
 
@@ -33,7 +33,7 @@ void LvLoop::enable() {
 }
 
 void LvLoop::disable() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     qDebug() << "LvLoop::disable()";
 
     end();
@@ -41,7 +41,7 @@ void LvLoop::disable() {
 }
 
 void LvLoop::start() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     qDebug() << "LvLoop::start()";
 
     isRunning = true;
@@ -50,14 +50,14 @@ void LvLoop::start() {
 }
 
 void LvLoop::stop() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     qDebug() << "LvLoop::stop()";
 
     isRunning = false;
 }
 
 void LvLoop::end() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     qDebug() << "LvLoop::end()";
 
 //    isRunning = false;
@@ -71,14 +71,14 @@ void LvLoop::end() {
 }
 
 void LvLoop::incBlockers() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     blockers++;
     end();
 }
 
 void LvLoop::decBlockers() {
-    if(!isEnabled)return;
+    if (!isEnabled) return;
     blockers--;
 //    usleep(1 * 1000 * 1000);
-    if(blockers == 0 && isEnabled)start();
+    if (blockers == 0 && isEnabled) start();
 }

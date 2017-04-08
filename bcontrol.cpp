@@ -5,10 +5,16 @@
 //  Created by korytov on 26/03/16.
 //  Copyright (c) 2016 korytov. All rights reserved.
 //
-
 #include "bcontrol.h"
+
 #include <sstream>
+
 #include <QNetworkInterface>
+
+#include "bcamera.h"
+#include "stepperspi.h"
+#include "pwlistener.h"
+#include "mainwidget.h"
 
 bControl::bControl(QObject *parent) : QObject(parent) {
 //    qRegisterMetaType<std::string>("std::string");
@@ -16,8 +22,16 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     mw = new MainWidget();
     mw->show();
 
-    QString  iface = QNetworkInterface::interfaceFromName("eth0").addressEntries().at(0).ip().toString();
+    // List all interfaces
+    QList<QNetworkInterface> listOfAllInterfaces = QNetworkInterface::allInterfaces();
+    foreach (QNetworkInterface curInterface, listOfAllInterfaces) {
+        qDebug() << curInterface.humanReadableName();
+    }
+
+    QString iface = QNetworkInterface::interfaceFromName("lo").addressEntries().at(0).ip().toString();
+    qDebug() << "Setting iface = " << iface;
     mw->setIp(iface);
+
 
     pwl = new PWListener(49); //or 49
     QThread *threadPWL = new QThread();
@@ -27,10 +41,6 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     
     std::cout << "bcontrol up\n" << std::flush;
   
-   // m_tilt = new stepperPru(1, pruDataMem_byte, 100, 0, 69, true, 3);
-   // m_pan = new stepperPru(2, pruDataMem_byte, 100, 0, 68, true, 3);
-   // m_zoom = new stepperPru(3, pruDataMem_byte, 100, 0, 23, true, 12);
-
     l6470Setup ms; //defaults are taken from btypes.h
 
 /*
@@ -70,8 +80,6 @@ bControl::bControl(QObject *parent) : QObject(parent) {
 //    m_pan->moveToThread(thread_pan);
 //    thread_pan->start();
 
-
-
     ms.m_stp = 16;
     ms.mot_acc = 500;
     ms.max_spd = 200;
@@ -83,10 +91,6 @@ bControl::bControl(QObject *parent) : QObject(parent) {
 //    QThread *thread_zoom = new QThread();
 //    m_zoom->moveToThread(thread_zoom);
 //    thread_zoom->start();
-
-    //m_slider = new stepperPru(4, pruDataMem_byte, 100, 0, 26, true, 3);
-
-//    m_focus = new stepperPru(5, pruDataMem_byte, 100, 0, 19, true, 8);
 
     m_focus = new stepperSpi(spiBus3, 2, 110, ms);;
     m_slider = m_focus;
@@ -166,7 +170,6 @@ void bControl::onTimerHeavy() {
     senderHeavy();
 }
 
-
 void bControl::setCamera(bCamera *c) {
     cam = c;
     tl->setCamera(cam);
@@ -204,7 +207,6 @@ void bControl::toggleTimelapseFixedPoint(std::string id) {
     }
     updateFixedPointsVector();
 }
-
 
 void bControl::selectFixedPoint(std::string id) {
     if(fPoints.find(id) == fPoints.end())return;
@@ -357,7 +359,6 @@ void bControl::inputCallback(tHash in){
             else
                 fp.name = id;
 
-            
             addFixedPoint(fp.id, fp);
         }
         if(key == "select") {
@@ -371,15 +372,12 @@ void bControl::inputCallback(tHash in){
         }
     }
 
-
-
     if(dev == "viewfinder_cam" && key == "toggle") {
         cam->toggleViewfinderCam();
 
         if(cam->getLvActive())liveViewOn=1;
         if(cam->getVfActive())viewfinderCamOn=1;
     }
-
 
     if(dev == "live_view" && key == "toggle") {
         cam->toggleLiveView();
@@ -419,7 +417,6 @@ void bControl::inputCallback(tHash in){
                    if(value == "demo")doRunTimelapseNew(true);
                    else doRunTimelapseNew(false);
                }
-
     }
     if(dev == "timelapse"){
         if (key == "set_delay") {
@@ -534,16 +531,15 @@ void bControl::doRunTimelapseNew(bool demo) {
     */
 }
 
-void bControl::doStopTimelapseNew() {
+void bControl::doStopTimelapseNew(void) {
     if(!tl->isRunning())return;
 
     std::cout << "stopping TL\n" << std::flush;
     tl->cancelShooting();
 }
 
-
-unsigned int bControl::timelapseStatus() {
-    if(tl->isRunning())return 1;
+unsigned int bControl::timelapseStatus(void) {
+    if (tl->isRunning()) return 1;
     return 0;
 }
 

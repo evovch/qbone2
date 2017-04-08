@@ -9,19 +9,21 @@
 #ifndef __bone__camera__
 #define __bone__camera__
 
+#include <unistd.h>
+#include <thread>
+#include <iostream>
+
 #include <QtCore>
 #include <QObject>
 #include <QByteArray>
 
-#include <iostream>
 #include "gphoto2/gphoto2.h"
-#include <unistd.h>
+
 #include "btypes.h"
 #include "lvloop.h"
-#include "gpioint.h"
-#include "viewfindercamera.h"
 
-#include <thread>
+class ViewfinderCamera;
+class gpioInt;
 
 class bCamera : public QObject {
     Q_OBJECT
@@ -48,7 +50,7 @@ private:
     bool terminator;
     bool pause;
     bool isPaused;
-    bool *flushTerminator;
+    bool *flushTerminator; //TODO - wat?!
 
     struct libusb_device_handle *devh;
     
@@ -106,10 +108,10 @@ public:
     void getCameraFile(std::string filename);
     QByteArray captureLvFrame(void);
     
-    bool getCamActive() {return camActive;};
+    bool getCamActive() {return camActive;}
 
-    bool isNikon() {return camIsNikon;};
-    bool isCanon() {return camIsCanon;};
+    bool isNikon() {return camIsNikon;}
+    bool isCanon() {return camIsCanon;}
     
     unsigned int getFocusValue();
   
@@ -169,4 +171,4 @@ public slots:
     void onLvLoopTimer();
 };
 
-#endif /* defined(__bone__camera__) */
+#endif // __bone__camera__

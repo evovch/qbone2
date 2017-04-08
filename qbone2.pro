@@ -1,6 +1,6 @@
-QT       += core network gui widgets multimedia
+QT += core network gui widgets multimedia
 
-#CONFIG += console
+CONFIG += console
 
 release: DESTDIR = ../qbone2-build-release
 debug:   DESTDIR = ../qbone2-build-debug
@@ -14,8 +14,8 @@ UI_DIR = $$DESTDIR/.ui
 
 #INCLUDEPATH += /opt/arm/include
 
-QMAKE_CXXFLAGS += -std=c++11 -fpermissive
-LIBS += -lgphoto2 -lusb-1.0 -lopencv_videoio -lopencv_core -lopencv_imgcodecs -lopencv_imgproc
+#QMAKE_CXXFLAGS += -I/usr/local/include/
+#LIBS += -L/home/evovch/Documents/DKV/libgphoto2-2.5.10-dkv-patched/ -lgphoto2
 
 #QMAKE_CXXFLAGS += -std=c++11 -fpermissive -pthread -Iu8glib/src/ -I/opt/arm/include -I/opt/arm/include/arm-linux-gnueabihf -I/home/korytov/libs/include
 #QMAKE_LFLAGS += -pthread -L/opt/arm/lib/arm-linux-gnueabihf -L/home/korytov/libs/lib -L/opt/arm/lib -Wl,-O1 -Wl,-rpath,/opt/qt-arm/lib,-rpath,/home/korytov/libs/lib,-rpath,/opt/arm/lib/arm-linux-gnueabihf,-rpath,/opt/arm/lib -lusb-1.0 -lgphoto2 -lPocoNet -lPocoFoundation -lPocoUtil -lPocoXML -lrt
@@ -23,6 +23,11 @@ LIBS += -lgphoto2 -lusb-1.0 -lopencv_videoio -lopencv_core -lopencv_imgcodecs -l
 #QMAKE_CFLAGS += -Iu8glib/src/ -I/opt/arm/include -I/opt/arm/include/arm-linux-gnueabihf -I/home/korytov/libs/include
 #LIBS += /home/korytov/libs/lib/libu8glib.a /opt/arm/lib/libusb-1.0.a
 #LIBS += /opt/arm/lib/libusb-1.0.a
+
+QMAKE_CXXFLAGS += -std=c++11 -fpermissive -Wall -Wextra -Wpedantic
+
+LIBS += -lusb-1.0
+LIBS += -L/usr/local/lib/ -lgphoto2
 
 SOURCES += main.cpp \
     bcontrol.cpp \
@@ -40,7 +45,6 @@ SOURCES += main.cpp \
     mainwidget.cpp \
     viewfindercamera.cpp \
     viewfindercameracapture.cpp
-
 
 HEADERS += \
     btypes.h \
@@ -67,3 +71,5 @@ HEADERS += \
 FORMS += \
     mainwidget.ui
 
+DISTFILES += \
+    NOTES

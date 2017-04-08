@@ -1,10 +1,10 @@
 #ifndef VIEWFINDERCAMERACAPTURE_H
 #define VIEWFINDERCAMERACAPTURE_H
 
+#include <linux/videodev2.h>
+
 #include <QObject>
 #include <QThread>
-
-#include <linux/videodev2.h>
 
 class ViewfinderCameraCapture : public QThread
 {
@@ -12,6 +12,7 @@ class ViewfinderCameraCapture : public QThread
 
 public:
     explicit ViewfinderCameraCapture(bool *in_terminator, int *in_fd_vfcam,  void* in_buffer_start, struct v4l2_buffer *in_bufferinfo);
+    //TODO destructor?
 
 private:
     int *fd_vfcam;

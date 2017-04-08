@@ -7,10 +7,8 @@ LvTcpSocket::LvTcpSocket(QTcpSocket *s, QObject *parent) :
 }
 
 void LvTcpSocket::onFrameReady(QByteArray frame) {
-    if(socket->bytesToWrite() > 1024 * 1024) {
+    if (socket->bytesToWrite() > 1024 * 1024) {
         return;
     }
     socket->write(frame.data(), frame.size());
 }
-
-

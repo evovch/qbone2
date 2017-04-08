@@ -8,13 +8,13 @@ MainWidget::MainWidget(QWidget *parent) :
     ui->setupUi(this);
 }
 
-MainWidget::setIp(QString ip)
+void MainWidget::setIp(QString ip)
 {
     ui->label_ip->setText("IP: " + ip);
 }
 
 
-MainWidget::~MainWidget()
+MainWidget::~MainWidget(void)
 {
     delete ui;
 }

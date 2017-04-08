@@ -13,20 +13,22 @@ PWListener::PWListener(int gpioId, QObject *parent) : QObject(parent)
     lastInterval = 0;
 
     QObject::connect(buttonGpio, SIGNAL(gpioEdge(unsigned int, bool)), this, SLOT(_onGpioEdge(uint, bool)));
+}
 
-
+PWListener::~PWListener() {
 }
 
 void PWListener::_onGpioEdge(uint gpioId, bool level) {
     qDebug() << "got edge";
-    if (level == true)return;
+    if (level == true) return;
 
     int elapsed = timer->elapsed();
     int currentInterval = std::round((float)elapsed / 10);
     qDebug() << "got interval: " << currentInterval << " - elapsed: " << elapsed;
 
-    if(currentInterval == lastInterval)ticksCount++;
-    else {
+    if (currentInterval == lastInterval) {
+        ticksCount++;
+    } else {
         lastInterval = currentInterval;
         ticksCount = 0;
     }
@@ -40,9 +42,3 @@ void PWListener::_onGpioEdge(uint gpioId, bool level) {
         ticksCount = 0;
     }
 }
-
-PWListener::~PWListener()
-{
-
-}
-

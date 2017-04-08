@@ -11,7 +11,7 @@ MainTcpSocket::MainTcpSocket(QTcpSocket *s, QObject *parent) :
 void MainTcpSocket::onDataReady(tHash data) {
     std::string s = data.dev + ":" + data.key + ":" + data.value + ":";
 
-    for (int i=0; i < data.params.size(); i++) {
+    for (unsigned int i=0; i < data.params.size(); i++) {
         s += data.params[i]+',';
     }
 

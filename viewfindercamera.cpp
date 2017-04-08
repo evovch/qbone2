@@ -4,10 +4,11 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #include <QDebug>
 
+#include "viewfindercameracapture.h"
 
 ViewfinderCamera::ViewfinderCamera(QObject *parent) : QObject(parent)
 {
@@ -15,22 +16,22 @@ ViewfinderCamera::ViewfinderCamera(QObject *parent) : QObject(parent)
 }
 
 bool ViewfinderCamera::start(void){
-    if(isRunning)return;
+    if (isRunning) return false;    //TODO return what?
 
-    if((fd_vfcam = open("/dev/video1", O_RDWR)) < 0){
+    if ((fd_vfcam = open("/dev/video1", O_RDWR)) < 0) {
         qDebug() << "VF cam start: can't open FD";
-        return(false);
+        return false;
     }
 
     struct v4l2_capability cap;
-    if(ioctl(fd_vfcam, VIDIOC_QUERYCAP, &cap) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_QUERYCAP, &cap) < 0) {
         qDebug() << "VF cam start: can't VIDIOC_QUERYCAP";
-        return(false);
+        return false;
     }
 
-    if(!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)){
+    if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
         qDebug() << "VF cam start: no V4L2_CAP_VIDEO_CAPTURE capability";
-        return(false);
+        return false;
     }
 
     struct v4l2_format format;
@@ -39,9 +40,9 @@ bool ViewfinderCamera::start(void){
     format.fmt.pix.width = 640;
     format.fmt.pix.height = 480;
 
-    if(ioctl(fd_vfcam, VIDIOC_S_FMT, &format) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_S_FMT, &format) < 0) {
         qDebug() << "VF cam start: can't set pix format";
-        return(false);
+        return false;
     }
 
     struct v4l2_requestbuffers bufrequest;
@@ -49,9 +50,9 @@ bool ViewfinderCamera::start(void){
     bufrequest.memory = V4L2_MEMORY_MMAP;
     bufrequest.count = 1;
 
-    if(ioctl(fd_vfcam, VIDIOC_REQBUFS, &bufrequest) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_REQBUFS, &bufrequest) < 0) {
         qDebug() << "VF cam start: can't VIDIOC_REQBUFS";
-        return(false);
+        return false;
     }
 
     memset(&bufferinfo, 0, sizeof(bufferinfo));
@@ -60,16 +61,16 @@ bool ViewfinderCamera::start(void){
     bufferinfo.index = 0; /* Queueing buffer index 0. */
 
     // Put the buffer in the incoming queue.
-    if(ioctl(fd_vfcam, VIDIOC_QBUF, &bufferinfo) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_QBUF, &bufferinfo) < 0) {
         qDebug() << "VF cam start: can't VIDIOC_QBUF";
-        return(false);
+        return false;
     }
 
     // Activate streaming
     type = bufferinfo.type;
-    if(ioctl(fd_vfcam, VIDIOC_STREAMON, &type) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_STREAMON, &type) < 0) {
         qDebug() << "VF cam start: can't VIDIOC_STREAMON";
-        return(false);
+        return false;
     }
 
     buffer_start = mmap(
@@ -81,9 +82,9 @@ bool ViewfinderCamera::start(void){
         bufferinfo.m.offset
     );
 
-    if(buffer_start == MAP_FAILED){
+    if (buffer_start == MAP_FAILED) {
         qDebug() << "VF cam start: MAP_FAILED";
-        return(false);
+        return false;
     }
 
     memset(buffer_start, 0, bufferinfo.length);
@@ -92,9 +93,9 @@ bool ViewfinderCamera::start(void){
     bufferinfo.memory = V4L2_MEMORY_MMAP;
 
     // Dequeue the buffer.
-    if(ioctl(fd_vfcam, VIDIOC_DQBUF, &bufferinfo) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_DQBUF, &bufferinfo) < 0) {
         qDebug() << "VF cam start: can't VIDIOC_QBUF";
-        return(false);
+        return false;
     }
 
     vfc_terminator = false;
@@ -105,11 +106,11 @@ bool ViewfinderCamera::start(void){
 
     isRunning = true;
 
-    return(true);
+    return true;
 }
 
 bool ViewfinderCamera::stop(void){
-    if(!isRunning)return;
+    if (!isRunning) return false;    //TODO return what?
 
     disconnect(vfc, SIGNAL(finished()), this, SLOT(stop()));
 
@@ -117,7 +118,7 @@ bool ViewfinderCamera::stop(void){
     vfc_terminator = true;
     vfc->wait();
     qDebug() << "VFC thread terminated";
-    delete(vfc);
+    delete(vfc); //TODO implement check to avoid double-free
 
     if(ioctl(fd_vfcam, VIDIOC_STREAMOFF, &type) < 0){
         qDebug() << "VF cam stop: VIDIOC_STREAMOFF";
@@ -127,7 +128,7 @@ bool ViewfinderCamera::stop(void){
         qDebug() << "VF cam stop: can't close FD";
     }
 
-    munmap(buffer_start, bufferinfo.length);
+    munmap(buffer_start, bufferinfo.length); //TODO implement check of the return value
 
     qDebug() << "VF cam stop: FD closed";
 
@@ -135,7 +136,7 @@ bool ViewfinderCamera::stop(void){
 
     emit(stopped());
 
-    return(true);
+    return true;
 }
 
 void ViewfinderCamera::onFrameCaptured(QByteArray bytes) {
