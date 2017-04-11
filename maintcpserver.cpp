@@ -41,7 +41,6 @@ void MainTcpServer::setControl(bControl *ctl) {
     control = ctl;
 }
 
-
 void MainTcpServer::_onNewConnection(void)
 {
     qDebug() << "incoming MAIN conection";

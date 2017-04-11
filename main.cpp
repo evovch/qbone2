@@ -5,25 +5,24 @@
 
 #include <QApplication>
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <ifaddrs.h>
+#include <netdb.h>
+
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <unistd.h>
-#include <signal.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+
 #include "lvtcpserver.h"
 #include "maintcpserver.h"
 
 #include "bcontrol.h"
-
-#include <sys/types.h>
-#include <ifaddrs.h>
-#include <cstring>      //TODO why <cstring> and not just <string>?
-#include <sys/socket.h>
-#include <netdb.h>
 
 bControl *bc = NULL;
 bCamera *cam;
@@ -38,6 +37,7 @@ void exitGraceful(int sig) {
     exit(0);
 }
 
+/*
 std::string determineAddress() {
     ifaddrs *ifaddr, *ifa;
     int n;
@@ -62,6 +62,7 @@ std::string determineAddress() {
     //TODO return something!
     return std::string("");
 }
+*/
 
 int main(int argc, char *argv[])
 {
@@ -73,23 +74,27 @@ int main(int argc, char *argv[])
 
     while(1);
 */
-    printf("Starting up\r\n");
+    std::cout << "Starting up" << std::endl;
+    //printf("Starting up\r\n");
 
-    std::cout << argc << argv[0] << argv[1] << "...done\r\n" << std::flush;
+    std::cout << argc << " " << argv[0] << " "  << argv[1] << "... done\r\n" << std::flush;
 
     bool dontDaemonize = false;
     if (argc > 1 && std::string(argv[1]) == std::string("n")) {
-        printf("non-daemon\r\n");
+        std::cout << "non-daemon" << std::endl;
+        //printf("non-daemon\r\n");
         dontDaemonize = true;
     }
 
     if(dontDaemonize == false) {
-        printf("daemonizing\r\n");
+        std::cout << "daemonizing" << std::endl;
+        //printf("daemonizing\r\n");
         int pid, sid;
         pid = fork();
 
         if(pid < 0) {
-            printf("Can't fork\r\n");
+            std::cout << "Can't fork" << std::endl;
+            //printf("Can't fork\r\n");
             exit(1);
         } else if(pid != 0) {
             exit(0);
@@ -98,7 +103,8 @@ int main(int argc, char *argv[])
         sid = setsid();
 
         if(sid < 0) {
-            printf("Can't setsid\r\n");
+            std::cout << "Can't setsid" << std::endl;
+            //printf("Can't setsid\r\n");
             exit(1);
         }
         umask(0);

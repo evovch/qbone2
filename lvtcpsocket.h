@@ -1,10 +1,11 @@
 #ifndef LVTCPSOCKET_H
 #define LVTCPSOCKET_H
 
-#include <QTcpSocket>
 #include <QByteArray>
 
 #include "bcamera.h"
+
+class QTcpSocket;
 
 class LvTcpSocket : public QObject
 {

@@ -1,12 +1,15 @@
 #include "lvtcpsocket.h"
 
+#include <QTcpSocket>
+
 LvTcpSocket::LvTcpSocket(QTcpSocket *s, QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    socket(s)
 {
-    socket = s;
 }
 
-void LvTcpSocket::onFrameReady(QByteArray frame) {
+void LvTcpSocket::onFrameReady(QByteArray frame)
+{
     if (socket->bytesToWrite() > 1024 * 1024) {
         return;
     }
