@@ -4,7 +4,7 @@
 #include <QWidget>
 
 namespace Ui {
-class MainWidget;
+    class MainWidget;
 }
 
 class MainWidget : public QWidget
@@ -19,6 +19,7 @@ public:
 
 private:
     Ui::MainWidget *ui;
+
 };
 
 #endif // MAINWIDGET_H

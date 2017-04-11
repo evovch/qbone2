@@ -4,7 +4,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-//#include <stdio.h>
 
 #include <QDebug>
 

@@ -1,19 +1,12 @@
 #ifndef GPIOINT_H
 #define GPIOINT_H
 
-#include <QObject>
+//#include <QObject>
 #include <QThread>
 
 class gpioInt : public QThread
 {
     Q_OBJECT
-
-private:
-    void pollingLoop(unsigned int gpio);
-    unsigned int gpioNum;
-
-protected:
-    void run(void);
 
 public:
     explicit gpioInt(unsigned int gpio, QObject *parent = 0);
@@ -31,11 +24,18 @@ public:
     static int gpio_fd_open(unsigned int gpio);
     static int gpio_fd_close(int fd);
 
+protected:
+    void run(void);
+
 signals:
      void gpioEdge(unsigned int, bool);
     
 public slots:
     
+private:
+    void pollingLoop(unsigned int gpio);
+    unsigned int gpioNum;
+
 };
 
 /*

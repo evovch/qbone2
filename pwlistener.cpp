@@ -1,5 +1,8 @@
 #include "pwlistener.h"
+
 #include <QDebug>
+
+#include "gpioint.h"
 
 PWListener::PWListener(int gpioId, QObject *parent) : QObject(parent)
 {
@@ -18,7 +21,7 @@ PWListener::PWListener(int gpioId, QObject *parent) : QObject(parent)
 PWListener::~PWListener() {
 }
 
-void PWListener::_onGpioEdge(uint gpioId, bool level) {
+void PWListener::_onGpioEdge(uint /*gpioId*/, bool level) {
     qDebug() << "got edge";
     if (level == true) return;
 

@@ -18,7 +18,7 @@
 //#include <turbojpeg.h>
 
 #include "bcamera.h"
-
+#include "lvloop.h"
 #include "viewfindercamera.h"
 #include "gpioint.h"
 

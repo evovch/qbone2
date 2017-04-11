@@ -9,21 +9,20 @@
 #ifndef __bone__camera__
 #define __bone__camera__
 
-#include <unistd.h>
+//#include <unistd.h>
 #include <thread>
-#include <iostream>
 
-#include <QtCore>
+//#include <QtCore>
 #include <QObject>
 #include <QByteArray>
 
 #include "gphoto2/gphoto2.h"
 
 #include "btypes.h"
-#include "lvloop.h"
 
 class ViewfinderCamera;
 class gpioInt;
+class LvLoop;
 
 class bCamera : public QObject {
     Q_OBJECT

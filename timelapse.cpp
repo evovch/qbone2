@@ -1,6 +1,9 @@
 #include "timelapse.h"
 
+#include <QTimer>
+
 #include "stepperspi.h"
+#include "bcamera.h"
 
 Timelapse::Timelapse(QObject *parent) :
     QObject(parent)

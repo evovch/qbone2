@@ -2,8 +2,11 @@
 #define TIMELAPSE_H
 
 #include <QObject>
-#include "bcamera.h"
 
+#include "btypes.h" // for 'limits' type
+
+class QTimer;
+class bCamera;
 class stepperSpi;
 
 class Timelapse : public QObject

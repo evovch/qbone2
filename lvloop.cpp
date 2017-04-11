@@ -1,7 +1,7 @@
 #include "lvloop.h"
 
-#include <unistd.h>
 #include <QDebug>
+#include <QTimer>
 
 LvLoop::LvLoop(QObject *parent) :
     QObject(parent)

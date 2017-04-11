@@ -7,14 +7,18 @@
 //
 #include "bcontrol.h"
 
+#include <iostream>
 #include <sstream>
 
 #include <QNetworkInterface>
+#include <QTimer>
+#include <QDebug>
 
 #include "bcamera.h"
 #include "stepperspi.h"
 #include "pwlistener.h"
 #include "mainwidget.h"
+#include "timelapse.h"
 
 bControl::bControl(QObject *parent) : QObject(parent) {
 //    qRegisterMetaType<std::string>("std::string");
@@ -31,7 +35,6 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     QString iface = QNetworkInterface::interfaceFromName("lo").addressEntries().at(0).ip().toString();
     qDebug() << "Setting iface = " << iface;
     mw->setIp(iface);
-
 
     pwl = new PWListener(49); //or 49
     QThread *threadPWL = new QThread();
@@ -480,7 +483,7 @@ void bControl::inputCallback(tHash in){
 }
 
 //make TL control thread
-void bControl::doRunTimelapse(bool demo) {
+void bControl::doRunTimelapse(bool /*demo*/) {
     /*
     if(timelapseIsRunning)return;
     
@@ -501,7 +504,7 @@ void bControl::doStopTimelapse() {
     */
 }
 
-void bControl::doRunTimelapseNew(bool demo) {
+void bControl::doRunTimelapseNew(bool /*demo*/) {
     /*
     if(tl->isRunning())return;
 
@@ -547,7 +550,7 @@ bool bControl::cmpFpsByPan(fixedPoint p1, fixedPoint p2) {
     return(p1.pan < p2.pan);
 }
 
-void bControl::runLapseQbic(unsigned int frames, unsigned int secs, bool demo){
+void bControl::runLapseQbic(unsigned int /*frames*/, unsigned int /*secs*/, bool /*demo*/){
 /*
     if(timelapseIsRunning)return;
     timelapseIsRunning = true;

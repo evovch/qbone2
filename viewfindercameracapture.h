@@ -3,7 +3,6 @@
 
 #include <linux/videodev2.h>
 
-#include <QObject>
 #include <QThread>
 
 class ViewfinderCameraCapture : public QThread

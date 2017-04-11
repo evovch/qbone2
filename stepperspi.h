@@ -9,38 +9,19 @@
 #ifndef __bone__stepperspi__
 #define __bone__stepperspi__
 
-#include <iostream>
-
 #include <QObject>
 
-#include "gpioint.h"
+#include "btypes.h" // for l6470Setup
 #include "l6470/l6470.h"
-#include "stepperspiwatcher.h"
-#include "btypes.h"
 
 #endif // __bone__stepperspi__       //TODO why here and not at the end of the file?!
+
+class gpioInt;
+class stepperSpiWatcher;
 
 class stepperSpi : public QObject {
     Q_OBJECT
     
-private:
-    gpioInt* dirPin;
-    
-    long int c_pos;
-
-    stepperSpiWatcher *watcher;
-
-    int rangeMin;
-    int rangeMax;
-    unsigned int id;
-    gpioInt *resetGpio;
-    
-    const unsigned int absoluteRangeMax = 100000;
-
-    bool terminate;
-
-    L6470 *motor;
-
 public:
     stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpioNum, l6470Setup ms, QObject *parent = 0);
 
@@ -80,5 +61,23 @@ public:
     void _onUpdateMotorStatus(void);
     void receivePosition(long p);
     void togglePower();
+
+private:
+    gpioInt* dirPin;
+
+    long int c_pos;
+
+    stepperSpiWatcher *watcher;
+
+    int rangeMin;
+    int rangeMax;
+    unsigned int id;
+    gpioInt *resetGpio;
+
+    const unsigned int absoluteRangeMax = 100000;
+
+    bool terminate;
+
+    L6470 *motor;
 
 };

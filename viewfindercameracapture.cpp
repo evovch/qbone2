@@ -1,4 +1,5 @@
 #include "viewfindercameracapture.h"
+
 #include <sys/ioctl.h>
 
 #include <QDebug>

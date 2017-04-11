@@ -2,23 +2,23 @@
 #define LVLOOP_H
 
 #include <QObject>
-#include <QTimer>
+#include <QByteArray>
 
-#include "gphoto2/gphoto2.h"
+class QTimer;
 
 class LvLoop : public QObject
 {
     Q_OBJECT
 
 private:
-    QTimer *timer;
+    QTimer* timer;
 
     int blockers;
     bool isRunning;
     bool isEnabled;
     bool busy;
 
-    QTimer *lvTimer;
+    QTimer* lvTimer;
 
 public:
     explicit LvLoop(QObject *parent = 0);

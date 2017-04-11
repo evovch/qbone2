@@ -9,24 +9,22 @@
 #ifndef __bone__bcontrol__
 #define __bone__bcontrol__
 
-#include <iostream>
-#include <thread>
+//#include <thread>
 
 #include <QObject>
 
 #include "btypes.h"
 
-
 //#include "lvconn.h"
 //#include "lvconnfactory.h"
-#include "timelapse.h"
 
-#include "bus_protocol/fs_spi.h"
+#include "bus_protocol/fs_spi.h" // for ISPI
 
 class stepperSpi;
 class PWListener;
 class MainWidget;
 class bCamera;
+class Timelapse;
 
 class bControl : public QObject {
     Q_OBJECT

@@ -7,11 +7,11 @@
 //
 
 #include "stepperspi.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+
 #include <QDebug>
+
+#include "gpioint.h"
+#include "stepperspiwatcher.h"
 
 // CS GPIO
 // driver 1: 000
@@ -20,7 +20,7 @@
 // driver 4: 110
 // driver 5: 001
 
-stepperSpi::stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpioNum, l6470Setup ms, QObject *parent) {
+stepperSpi::stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpioNum, l6470Setup ms, QObject* /*parent*/) {
     id = csnLine;
 
     resetGpio = new gpioInt(resetGpioNum);

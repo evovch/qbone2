@@ -23,6 +23,7 @@
 #include "maintcpserver.h"
 
 #include "bcontrol.h"
+#include "bcamera.h"
 
 bControl *bc = NULL;
 bCamera *cam;
