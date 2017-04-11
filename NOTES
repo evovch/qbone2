@@ -10,3 +10,10 @@ first come public methods including (if public) constructor and destructor
 then - public data members
 then come protected methods and data members (if any)
 and in th end - private data members and methods (if any)
+
+In headers try to declare the class using
+class <ClassName>;
+and not define it using #include.
+It reduces files sizes, accelerated compilation and makes reading of the code easier.
+
+
