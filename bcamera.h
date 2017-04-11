@@ -9,10 +9,8 @@
 #ifndef __bone__camera__
 #define __bone__camera__
 
-//#include <unistd.h>
 #include <thread>
 
-//#include <QtCore>
 #include <QObject>
 #include <QByteArray>
 

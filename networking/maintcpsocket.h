@@ -1,21 +1,16 @@
 #ifndef MAINTCPSOCKET_H
 #define MAINTCPSOCKET_H
 
+#include <QObject>
+
 #include "btypes.h" // for tHash
 #include <string>
-
-#include <QObject>
 
 class QTcpSocket;
 
 class MainTcpSocket : public QObject
 {
     Q_OBJECT
-
-private:
-    QTcpSocket* socket;
-
-    std::string bufferAll;
 
 public:
     explicit MainTcpSocket(QTcpSocket* s, QObject* parent = 0);
@@ -27,6 +22,12 @@ public slots:
 
 signals:
     void newCall(tHash);
+
+private:
+    QTcpSocket* socket;
+
+    std::string bufferAll;
+
 };
 
 #endif // MAINTCPSOCKET_H

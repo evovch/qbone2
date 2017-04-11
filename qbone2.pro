@@ -1,6 +1,6 @@
 QT += core network gui widgets multimedia
 
-CONFIG += console
+#CONFIG += console
 
 release: DESTDIR = ../qbone2-build-release
 debug:   DESTDIR = ../qbone2-build-debug

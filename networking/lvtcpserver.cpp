@@ -23,7 +23,7 @@ LvTcpServer::LvTcpServer(QObject *parent) :
 
 void LvTcpServer::_onNewConnection(void)
 {
-    qDebug() << "Incoming LV conection";
+    qDebug() << "incoming LV conection";
     QTcpSocket* socket = server->nextPendingConnection();
     LvTcpSocket* lvsocket = new LvTcpSocket(socket);
     QObject::connect(camera, SIGNAL(frameReady(QByteArray)), lvsocket, SLOT(onFrameReady(QByteArray)));

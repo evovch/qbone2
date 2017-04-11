@@ -43,7 +43,7 @@ MainTcpServer::MainTcpServer(QObject *parent) :
 
 void MainTcpServer::_onNewConnection(void)
 {
-    qDebug() << "Incoming MAIN conection";
+    qDebug() << "incoming MAIN conection";
     QTcpSocket* socket = server->nextPendingConnection();
     MainTcpSocket* mainsocket = new MainTcpSocket(socket);
 

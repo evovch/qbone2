@@ -23,6 +23,11 @@ public:
     void cancelShooting();
     void setMotors(stepperSpi* slider, stepperSpi* pan, stepperSpi* tilt, stepperSpi* zoom);
 
+signals:
+
+public slots:
+    void shot(void);
+
 private:
     bCamera *camera; //TODO singleton? If yes - use standard singleton template!
     unsigned int shotCount;
@@ -42,11 +47,6 @@ private:
     int snapZoom;
 
     bool tlShooting;
-
-signals:
-
-public slots:
-    void shot(void);
 
 };
 

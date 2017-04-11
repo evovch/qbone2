@@ -9,14 +9,9 @@
 #ifndef __bone__bcontrol__
 #define __bone__bcontrol__
 
-//#include <thread>
-
 #include <QObject>
 
 #include "btypes.h"
-
-//#include "lvconn.h"
-//#include "lvconnfactory.h"
 
 #include "bus_protocol/fs_spi.h" // for ISPI
 
@@ -31,6 +26,7 @@ class bControl : public QObject {
 
 public:
     bControl(QObject *parent = 0);
+    //TODO destructor?
 
     fixedPoints getFixedPoints(void);
     int getFixedPointsSize(void);
@@ -42,7 +38,7 @@ public:
     void setCamera(bCamera *c);
     
     unsigned int timelapseStatus(void);
-    
+
     void setCurrentConnectionsCount(int c);
     
 private:

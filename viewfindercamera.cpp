@@ -119,11 +119,11 @@ bool ViewfinderCamera::stop(void){
     qDebug() << "VFC thread terminated";
     delete(vfc); //TODO implement check to avoid double-free
 
-    if(ioctl(fd_vfcam, VIDIOC_STREAMOFF, &type) < 0){
+    if (ioctl(fd_vfcam, VIDIOC_STREAMOFF, &type) < 0) {
         qDebug() << "VF cam stop: VIDIOC_STREAMOFF";
     }
 
-    if(close(fd_vfcam) < 0) {
+    if (close(fd_vfcam) < 0) {
         qDebug() << "VF cam stop: can't close FD";
     }
 

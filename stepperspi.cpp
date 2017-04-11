@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 korytov. All rights reserved.
 //
 
-#include "stepperspi.h"
-
 #include <QDebug>
+
+#include "stepperspi.h"
 
 #include "gpioint.h"
 #include "stepperspiwatcher.h"
@@ -49,7 +49,6 @@ stepperSpi::stepperSpi(ISPI *spiBus, unsigned int csnLine, unsigned int resetGpi
 */
 
     motorStatus->powerStatus = true;
-
 
     watcher = new stepperSpiWatcher(motorStatus);
 
@@ -108,7 +107,6 @@ void stepperSpi::_onUpdateMotorStatus() {
     if ((st & dSPIN_STATUS_OCD) == 0)qDebug() << "dSPIN_ERR_OVERC";
     if ((st & dSPIN_STATUS_STEP_LOSS_A) == 0)qDebug() << "dSPIN_ERR_STALLA";
     if ((st & dSPIN_STATUS_STEP_LOSS_B) == 0)qDebug() << "dSPIN_ERR_STALLB";
-
 
     motorStatus->position = motor->getPosition();
 

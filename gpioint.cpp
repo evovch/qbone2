@@ -218,7 +218,6 @@ int gpioInt::gpio_get_value(unsigned int gpio, unsigned int *value)
     return 0;
 }
 
-
 /****************************************************************
  * gpio_set_edge
  ****************************************************************/

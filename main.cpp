@@ -29,11 +29,11 @@ bControl *bc = NULL;
 bCamera *cam;
 
 void exitGraceful(int sig) {
-    std::cout << "extitting\r\n" << std::flush;
+    qDebug() << "extitting";
    
     delete cam;
 
-    std::cout << "...done\r\n" << std::flush;
+    qDebug() << "...done";
 
     exit(0);
 }
@@ -75,37 +75,32 @@ int main(int argc, char *argv[])
 
     while(1);
 */
-    std::cout << "Starting up" << std::endl;
-    //printf("Starting up\r\n");
+    qDebug() << "Starting up";
 
-    std::cout << argc << " " << argv[0] << " "  << argv[1] << "... done\r\n" << std::flush;
+    qDebug() << argc << " " << argv[0] << " "  << argv[1] << " ...done";
 
     bool dontDaemonize = false;
     if (argc > 1 && std::string(argv[1]) == std::string("n")) {
-        std::cout << "non-daemon" << std::endl;
-        //printf("non-daemon\r\n");
+        qDebug() << "non-daemon";
         dontDaemonize = true;
     }
 
-    if(dontDaemonize == false) {
-        std::cout << "daemonizing" << std::endl;
-        //printf("daemonizing\r\n");
+    if (dontDaemonize == false) {
+        qDebug() << "daemonizing";
         int pid, sid;
         pid = fork();
 
-        if(pid < 0) {
-            std::cout << "Can't fork" << std::endl;
-            //printf("Can't fork\r\n");
+        if (pid < 0) {
+            qDebug() << "Can't fork";
             exit(1);
-        } else if(pid != 0) {
+        } else if (pid != 0) {
             exit(0);
         }
 
         sid = setsid();
 
-        if(sid < 0) {
-            std::cout << "Can't setsid" << std::endl;
-            //printf("Can't setsid\r\n");
+        if (sid < 0) {
+            qDebug() << "Can't setsid";
             exit(1);
         }
         umask(0);

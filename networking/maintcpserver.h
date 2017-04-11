@@ -17,7 +17,7 @@ public:
 
     void setCamera(bCamera* cam) { camera = cam; }
     void setControl(bControl* ctl) { control = ctl; }
-    //int getCurrentConnectionsCount(void) { return currentConnectionsCount; } //TODO not used?
+    //unsigned int getCurrentConnectionsCount(void) { return currentConnectionsCount; } //TODO not used?
 
 signals:
     

@@ -39,25 +39,25 @@ void MainTcpSocket::onReadyRead(void)
 {
     char buffer[20000];
 
-    if(socket->bytesAvailable() != 0) {
+    if (socket->bytesAvailable() != 0) {
         int n = socket->read(buffer, socket->bytesAvailable());
         bufferAll += std::string(buffer, n);
     }
     std::size_t found;
     while(1) {
         found = bufferAll.find("\n");
-        if(found == std::string::npos)break;
+        if (found == std::string::npos) break;
         std::string chunk = bufferAll.substr(0, found);
         bufferAll.erase(0,found+1);
 
         QStringList tokens = QString(chunk.c_str()).split(':');
 
         std::vector<std::string> params;
-        if(tokens.size() < 3) {
+        if (tokens.size() < 3) {
             std::cout << "corrupted data:" << chunk << "\n" << std::flush;
             continue;
         }
-        if(tokens.size() == 4) {
+        if (tokens.size() == 4) {
             QStringList ptokens = tokens.at(3).split(',');
             for(int i=0; i < ptokens.size(); i++){
                 params.push_back(ptokens.at(i).toStdString());

@@ -42,8 +42,8 @@ bControl::bControl(QObject *parent) : QObject(parent) {
     pwl->moveToThread(threadPWL);
     threadPWL->start();
     
-    std::cout << "bcontrol up\n" << std::flush;
-  
+    qDebug() << "bcontrol up";
+
     l6470Setup ms; //defaults are taken from btypes.h
 
 /*
@@ -198,7 +198,7 @@ void bControl::removeFixedPoint(std::string id) {
 void bControl::toggleTimelapseFixedPoint(std::string id) {
     std::map<std::string, fixedPoint>::iterator it = fPoints.find(id);
     
-    std::cout << "toggling FP in timelapse\r\n";
+    qDebug() << "toggling FP in timelapse";
     if (it != fPoints.end()) {
         if(it->second.timelapseMember == 0) {
             fixedPointsVector tlPoints;
@@ -493,7 +493,7 @@ void bControl::doRunTimelapse(bool /*demo*/) {
     */
 }
 
-void bControl::doStopTimelapse() {
+void bControl::doStopTimelapse(void) {
     /*
     if(!timelapseIsRunning)return;
     
@@ -535,9 +535,9 @@ void bControl::doRunTimelapseNew(bool /*demo*/) {
 }
 
 void bControl::doStopTimelapseNew(void) {
-    if(!tl->isRunning())return;
+    if (!tl->isRunning()) return;
 
-    std::cout << "stopping TL\n" << std::flush;
+    qDebug() << "stopping TL";
     tl->cancelShooting();
 }
 
@@ -642,7 +642,6 @@ void bControl::runLapseQbic(unsigned int /*frames*/, unsigned int /*secs*/, bool
     
     timelapseIsRunning = false;
     std::cout << "terminating TL\n" << std::flush;
-
 */
 }
 

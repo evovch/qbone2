@@ -13,6 +13,9 @@ public:
     explicit ViewfinderCameraCapture(bool *in_terminator, int *in_fd_vfcam,  void* in_buffer_start, struct v4l2_buffer *in_bufferinfo);
     //TODO destructor?
 
+signals:
+    void frameCaptured(QByteArray);
+
 private:
     int *fd_vfcam;
     void *buffer_start;
@@ -20,9 +23,6 @@ private:
     bool *terminator;
 
     void run(void);
-
-signals:
-    void frameCaptured(QByteArray);
 
 };
 

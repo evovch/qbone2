@@ -17,17 +17,6 @@ public:
 
     bool start(void);
 
-private:
-    int fd_vfcam;
-    void* buffer_start;
-    struct v4l2_buffer bufferinfo;
-    int type;
-
-    ViewfinderCameraCapture *vfc;
-
-    bool vfc_terminator;
-    bool isRunning;
-
 signals:
     void frameReady(QByteArray);
     void stopped(void);
@@ -35,6 +24,16 @@ signals:
 public slots:
     void onFrameCaptured(QByteArray bytes);
     bool stop(void);
+
+private:
+    int fd_vfcam;
+    void* buffer_start;
+    struct v4l2_buffer bufferinfo;
+    int type;
+
+    ViewfinderCameraCapture *vfc;
+    bool vfc_terminator;
+    bool isRunning;
 
 };
 

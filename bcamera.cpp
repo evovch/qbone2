@@ -48,7 +48,7 @@ bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbP
     afPin->setDir(1);
     srPin->setDir(1);
 
-    if(n_usbPin != 0) {
+    if (n_usbPin != 0) {
         usbPin = new gpioInt(n_usbPin);
         usbPin->setDir(1);
     } else {
@@ -245,12 +245,12 @@ void bCamera::onLvLoopTimer() {
 //    qDebug() << "captured LvLoop frame";
 }
 
-void bCamera::onLvLoopFrameReady(QByteArray frame){
+void bCamera::onLvLoopFrameReady(QByteArray frame) {
 //    qDebug() << "reemintting frameRady(...)";
     emit frameReady(frame);
 }
 
-void bCamera::onViewfinderCameraFrameReady(QByteArray frame){
+void bCamera::onViewfinderCameraFrameReady(QByteArray frame) {
 //    qDebug() << "reemintting frameRady(...)";
     emit frameReady(frame);
 }
@@ -300,11 +300,11 @@ unsigned int bCamera::getUsbPower(void) {
 void bCamera::nullFocus() {
 //    triggerAf(true);
 //    triggerAf(false);
-    
+
     int c = 0;
 
     setConfig("viewfinder", "1", 2);
-    
+
 //    activateLiveView();
 //    usleep(2 * 1000 * 1000);
     
@@ -317,32 +317,32 @@ void bCamera::nullFocus() {
 }
 
 void bCamera::focusUp() {
-    if(setConfig("manualfocusdrive", "30", 0)) {
+    if (setConfig("manualfocusdrive", "30", 0)) {
         focusValue += 30;
     }
 }
 
 void bCamera::focusDown() {
-    if(setConfig("manualfocusdrive", "-30", 0)) {
+    if (setConfig("manualfocusdrive", "-30", 0)) {
         focusValue -= 30;
     }
 }
 
 void bCamera::focusUpMuch() {
-    if(setConfig("manualfocusdrive", "300", 0)) {
+    if (setConfig("manualfocusdrive", "300", 0)) {
         focusValue += 300;
     }
 }
 
 void bCamera::focusDownMuch() {
-    if(setConfig("manualfocusdrive", "-300", 0)) {
+    if (setConfig("manualfocusdrive", "-300", 0)) {
         focusValue -= 300;
     }
 }
 
 void bCamera::focusSetValue(unsigned int val) {
     int delta = val - focusValue;
-    if(setConfig("manualfocusdrive", std::to_string(delta), 0)) {
+    if (setConfig("manualfocusdrive", std::to_string(delta), 0)) {
         focusValue = val;
     }
 }
@@ -389,13 +389,13 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
             busy_wait_retries++;
         } while ((ret == GP_ERROR_CAMERA_BUSY) && (busy_wait_retries < 50));
 
-        if(ret != GP_OK) {
+        if (ret != GP_OK) {
             std::cout << "error: gp_camera_get_config: \r\n" << ret << std::flush;
             continue;
         }
         
         ret = gp_widget_get_child_by_name (widget, key.c_str(), &child);
-        if(ret != GP_OK) {
+        if (ret != GP_OK) {
             std::cout << "error: gp_widget_get_child_by_name\r\n" << std::flush;
             continue;
         }
@@ -424,7 +424,7 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
             float v_float = std::stof(val);
             ret = gp_widget_set_value (child, &v_float);
         }
-        if(ret != GP_OK) {
+        if (ret != GP_OK) {
             std::cout << "error: gp_widget_set_value\r\n" << std::flush;
             continue;
         }
@@ -455,11 +455,11 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
 
             QString edata((char*)data);
 
-            if(evtype==GP_EVENT_TIMEOUT) {
+            if (evtype==GP_EVENT_TIMEOUT) {
                 std::cout << "event timeout\r\n" << std::flush;
                 break;
             }
-            if(evtype==eventType && edata==eventData) {
+            if (evtype==eventType && edata==eventData) {
                 std::cout << "event match\r\n" << std::flush;
                 break;
             }
@@ -483,7 +483,6 @@ void bCamera::onLvLoopEnd() {
     viewfinderBusy = true;
 
     setConfig("capturetarget", "1", 4);
-
 }
 
 void bCamera::onLvLoopStart() {
@@ -525,11 +524,11 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
     CameraWidget *widget = NULL, *child = NULL;
     
     ret = gp_camera_get_config (camera, &widget, context);
-    if(ret != GP_OK)return("");
+    if (ret != GP_OK) return("");
     std::cout << ret << "?" << GP_OK << "\r\n" << std::flush;
     
     ret = gp_widget_get_child_by_name (widget, key.c_str(), &child);
-    if(ret != GP_OK)return("");
+    if (ret != GP_OK) return("");
     std::cout << ret << "?" << GP_OK << "\r\n" << std::flush;
     
     /*
@@ -549,14 +548,13 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
     
     if (inputType==5) {
         ret = gp_widget_get_value (child, &v_float);
-    }
-    else {
+    } else {
         ret = gp_widget_get_value (child, &wval);
     }
     
     if (inputType==4) { //radio
         int cnt = gp_widget_count_choices(child);
-        for ( int i=0; i<cnt; i++) {
+        for (int i=0; i<cnt; i++) {
             const char *choice;
             ret = gp_widget_get_choice (child, i, &choice);
             
@@ -573,7 +571,7 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
         retVal = std::string(wval);
     }
 
-    if(ret != GP_OK)return("");
+    if (ret != GP_OK) return "";
     
     std::cout << "got: " << retVal << "\r\n" << std::flush;
     
@@ -646,7 +644,7 @@ void bCamera::lvLoop() {
 }
 
 bool bCamera::activateLiveView() {
-    if (!camActive) return(false);
+    if (!camActive) return false;
 
     lvLoopThreaded->enable();
 
@@ -656,7 +654,7 @@ bool bCamera::activateLiveView() {
 }
 
 bool bCamera::deactivateLiveView() {
-    if (!camActive) return(false);
+    if (!camActive) return false;
 
     lvLoopThreaded->disable();
 
@@ -704,7 +702,7 @@ void bCamera::srControl(float timeLimit) {
     int i = timeLimit / 0.1;
     while (i--) {
         usleep(0.1 * 1000 * 1000);
-        if(srOn==false)return;
+        if (srOn==false) return;
 
     }
     if (srOn==true) triggerSr(false);
@@ -717,7 +715,7 @@ void bCamera::triggerAf(bool value, float timeLimit) {
         if (camActive) lvLoopThreaded->incBlockers();
         afPin->setValue(1);
         afOn = true;
-        afControlThread = new std::thread( &bCamera::afControl, this, timeLimit );
+        afControlThread = new std::thread(&bCamera::afControl, this, timeLimit);
         afControlThread->detach();
         return;
     }
@@ -758,9 +756,9 @@ void bCamera::triggerSr(bool value, float timeLimit) {
 
 void bCamera::capture() {
     CameraEventType	evtype;
-    void * data;
+    void *data;
     int retval;
-    CameraFilePath * path;
+    CameraFilePath *path;
     
     path = new CameraFilePath;
 
@@ -772,7 +770,7 @@ void bCamera::capture() {
         fprintf(stderr,"triggering capture had error %d\n", retval);
     }
     
-    for(int i=0; i<100; i++) {
+    for (int i=0; i<100; i++) {
         retval = gp_camera_wait_for_event(camera, 10000, &evtype, &data, context);
         std::cout << evtype << "\n" <<  std::flush;
         if(evtype==GP_EVENT_CAPTURE_COMPLETE)break;
@@ -791,7 +789,7 @@ void bCamera::getCameraFile(std::string filename) {
     const char *name;
     int fd, retval;
     CameraFile *file;
-    CameraFilePath  *path;
+    CameraFilePath *path;
     
     gp_camera_folder_list_files (camera, "/store_00020001/DCIM/231NC_D4", list, context);
     
@@ -878,7 +876,7 @@ camInfoType bCamera::getCamInfo() {
 }
 
 void bCamera::flushCamera(int downloadNumber, bool *camFlushTerminator) {
-    if(!camActive)return;
+    if (!camActive) return;
     lvLoopThreaded->incBlockers();
 
     flushTerminator = NULL;
@@ -897,7 +895,7 @@ void bCamera::flushCamera(int downloadNumber, bool *camFlushTerminator) {
 
 void bCamera::downloadCameraDir(std::string dirname) {
     if (!camActive) return;
-    
+
     CameraList *dlist, *flist;
     gp_list_new (&flist);
     gp_list_new (&dlist);
@@ -907,8 +905,7 @@ void bCamera::downloadCameraDir(std::string dirname) {
     CameraFilePath *path;
     
     std::string pwdStr;
-    
-    
+
     pwd.push_back(dirname);
     for (unsigned int i = 0; i < pwd.size(); i++) {
         pwdStr += pwd[i];
@@ -923,7 +920,7 @@ void bCamera::downloadCameraDir(std::string dirname) {
     std::cout << "fcount: " << fcount << "\r\n" << std::flush;
 
     QString mess;
-    for (int j = fcount-1; j >= 0; j--) {
+    for (unsigned int j = fcount-1; j >= 0; j--) {
         if (*flushTerminator==true || downloadLimit==0) continue;
             
         gp_list_get_name (flist, j, &fname);

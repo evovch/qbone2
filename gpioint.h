@@ -1,7 +1,6 @@
 #ifndef GPIOINT_H
 #define GPIOINT_H
 
-//#include <QObject>
 #include <QThread>
 
 class gpioInt : public QThread
@@ -38,7 +37,6 @@ private:
 
 };
 
-/*
 class Sleeper : public QThread
 {
 public:
@@ -46,5 +44,5 @@ public:
     static void msleep(unsigned long msecs) {QThread::msleep(msecs);}
     static void sleep(unsigned long secs) {QThread::sleep(secs);}
 };
-*/
+
 #endif // GPIOINT_H

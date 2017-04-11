@@ -16,14 +16,14 @@ public:
 
     void setCamera(bCamera* cam) { camera = cam; }
 
-private:
-    QTcpServer* server;
-    bCamera* camera;
-
 signals:
     
 public slots:
     void _onNewConnection(void);
+
+private:
+    QTcpServer* server;
+    bCamera* camera;
 
 };
 

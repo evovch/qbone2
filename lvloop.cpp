@@ -18,7 +18,7 @@ LvLoop::LvLoop(QObject *parent) :
 }
 
 void LvLoop::onTimer(void) {
-    if(!isRunning)return;
+    if (!isRunning) return;
 
     emit lvLoopTimer();
 }

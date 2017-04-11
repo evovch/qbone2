@@ -18,7 +18,8 @@ PWListener::PWListener(int gpioId, QObject *parent) : QObject(parent)
     QObject::connect(buttonGpio, SIGNAL(gpioEdge(unsigned int, bool)), this, SLOT(_onGpioEdge(uint, bool)));
 }
 
-PWListener::~PWListener() {
+PWListener::~PWListener()
+{
 }
 
 void PWListener::_onGpioEdge(uint /*gpioId*/, bool level) {
