@@ -99,7 +99,7 @@ bool ViewfinderCamera::start(void){
     }
 
     vfc_terminator = false;
-    vfc = new ViewfinderCameraCapture(&vfc_terminator, &fd_vfcam, buffer_start, &bufferinfo);
+    vfc = new ViewfinderCameraCapture(&vfc_terminator, &fd_vfcam, buffer_start, &bufferinfo); //TODO corresponding 'delete'?
     connect(vfc, SIGNAL(frameCaptured(QByteArray)), this, SLOT(onFrameCaptured(QByteArray)));
     connect(vfc, SIGNAL(finished()), this, SLOT(stop()));
     vfc->start();

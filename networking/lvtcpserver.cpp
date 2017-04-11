@@ -1,6 +1,10 @@
 #include "lvtcpserver.h"
-#include "lvtcpsocket.h"
+
 #include <QDebug>
+#include <QTcpServer>
+
+#include "lvtcpsocket.h" // to enable 'connect'!
+#include "bcamera.h" // to enable 'connect'!
 
 LvTcpServer::LvTcpServer(QObject *parent) :
     QObject(parent)
@@ -20,7 +24,7 @@ LvTcpServer::LvTcpServer(QObject *parent) :
 void LvTcpServer::_onNewConnection(void)
 {
     qDebug() << "Incoming LV conection";
-    QTcpSocket *socket = server->nextPendingConnection();
-    LvTcpSocket *lvsocket = new LvTcpSocket(socket);
+    QTcpSocket* socket = server->nextPendingConnection();
+    LvTcpSocket* lvsocket = new LvTcpSocket(socket);
     QObject::connect(camera, SIGNAL(frameReady(QByteArray)), lvsocket, SLOT(onFrameReady(QByteArray)));
 }

@@ -2,9 +2,9 @@
 #define LVTCPSERVER_H
 
 #include <QObject>
-#include <QTcpServer>
 
-#include "bcamera.h"
+class QTcpServer;
+class bCamera;
 
 class LvTcpServer : public QObject
 {
@@ -14,11 +14,11 @@ public:
     explicit LvTcpServer(QObject *parent = 0);
     //TODO destructor?
 
-    void setCamera(bCamera *cam) {camera = cam;}
+    void setCamera(bCamera* cam) { camera = cam; }
 
 private:
-    QTcpServer *server;
-    bCamera *camera;
+    QTcpServer* server;
+    bCamera* camera;
 
 signals:
     

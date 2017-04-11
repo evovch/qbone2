@@ -1,5 +1,10 @@
 #include "maintcpsocket.h"
 
+#include <iostream>
+
+#include <QByteArray>
+#include <QTcpSocket> // to enable 'connect'!
+
 MainTcpSocket::MainTcpSocket(QTcpSocket *s, QObject *parent) :
     QObject(parent)
 {
@@ -8,16 +13,17 @@ MainTcpSocket::MainTcpSocket(QTcpSocket *s, QObject *parent) :
     QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 }
 
-void MainTcpSocket::onDataReady(tHash data) {
+void MainTcpSocket::onDataReady(tHash data)
+{
     std::string s = data.dev + ":" + data.key + ":" + data.value + ":";
 
     for (unsigned int i=0; i < data.params.size(); i++) {
         s += data.params[i]+',';
     }
 
-    s+="\n";
+    s += "\n";
 
-    if(socket->bytesToWrite() > 1024) {
+    if (socket->bytesToWrite() > 1024) {
         return;
     }
 
@@ -29,7 +35,8 @@ void MainTcpSocket::onDataReady(tHash data) {
     }
 }
 
-void MainTcpSocket::onReadyRead() {
+void MainTcpSocket::onReadyRead(void)
+{
     char buffer[20000];
 
     if(socket->bytesAvailable() != 0) {

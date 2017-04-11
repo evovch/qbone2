@@ -29,14 +29,16 @@ QMAKE_CXXFLAGS += -std=c++11 -fpermissive -Wall -Wextra -Wpedantic
 LIBS += -lusb-1.0
 LIBS += -L/usr/local/lib/ -lgphoto2
 
+INCLUDEPATH += networking/
+
 SOURCES += main.cpp \
     bcontrol.cpp \
     bcamera.cpp \
-    lvtcpserver.cpp \
-    lvtcpsocket.cpp \
+    networking/maintcpserver.cpp \
+    networking/maintcpsocket.cpp \
+    networking/lvtcpserver.cpp \
+    networking/lvtcpsocket.cpp \
     timelapse.cpp \
-    maintcpserver.cpp \
-    maintcpsocket.cpp \
     lvloop.cpp \
     gpioint.cpp \
     pwlistener.cpp \
@@ -50,11 +52,11 @@ HEADERS += \
     btypes.h \
     bcontrol.h \
     bcamera.h \
-    lvtcpserver.h \
-    lvtcpsocket.h \
+    networking/maintcpserver.h \
+    networking/maintcpsocket.h \
+    networking/lvtcpserver.h \
+    networking/lvtcpsocket.h \
     timelapse.h \
-    maintcpserver.h \
-    maintcpsocket.h \
     lvloop.h \
     gpioint.h \
     pwlistener.h \

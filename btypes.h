@@ -121,4 +121,4 @@ struct limits {
   int maxZoom;
 };
 
-#endif
+#endif // bone_btypes_h

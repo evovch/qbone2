@@ -51,8 +51,7 @@ bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbP
     if(n_usbPin != 0) {
         usbPin = new gpioInt(n_usbPin);
         usbPin->setDir(1);
-    }
-    else {
+    } else {
         usbPin = NULL;
     }
 
@@ -75,6 +74,14 @@ bCamera::bCamera(unsigned int n_afPin, unsigned int n_srPin, unsigned int n_usbP
     }
 }
 
+bCamera::~bCamera() {
+    camLookupTerminator = true;
+    camLookupThread->join();
+
+    freeCam();
+    freeUSB();
+}
+
 void bCamera::runCamLookupThread(void) {
     camLookupTerminator = false;
 
@@ -84,7 +91,7 @@ void bCamera::runCamLookupThread(void) {
 
         bool f = lookupCam();
         
-        if(f && !camActive) {
+        if (f && !camActive) {
             qDebug() << "camera found...\r\n";
             emit(cameraFound());
         }
@@ -95,7 +102,7 @@ void bCamera::runCamLookupThread(void) {
     }
 }
 
-void bCamera::onCameraFound(){
+void bCamera::onCameraFound() {
     initCam();
     updateCamInfo();
 
@@ -105,12 +112,12 @@ void bCamera::onCameraFound(){
     setConfig("recordingmedia", "0", 4);
 }
 
-void bCamera::onCameraLost(){
+void bCamera::onCameraLost() {
     freeCam();
 }
 
 bool bCamera::lookupCam(void) {
-    if(usbSuspended)return(false);
+    if (usbSuspended) return false;
     int l_ret;
     
     struct libusb_device **devs;
@@ -130,7 +137,7 @@ bool bCamera::lookupCam(void) {
             camIsNikon = true;
             qDebug() << "NIKON camera found\r\n";
 
-            return(true);
+            return true;
             
             break;
         }
@@ -139,7 +146,7 @@ bool bCamera::lookupCam(void) {
             camIsCanon = true;
             qDebug() << "CANON camera found\r\n";
 
-            return(true);
+            return true;
 
             break;
         }
@@ -153,7 +160,7 @@ bool bCamera::lookupCam(void) {
     }
 
     qDebug() << "not found\r\n";
-    return(false);
+    return false;
 }
 
 void bCamera::initUSB(void) {
@@ -162,7 +169,6 @@ void bCamera::initUSB(void) {
     
     lvRunning = false;
 }
-
 
 void bCamera::freeUSB(void) {
     libusb_exit(NULL);
@@ -196,7 +202,7 @@ void bCamera::initCam(void){
 }
 
 void bCamera::onLvLoopTimer() {
-    if(viewfinderBusy)return;
+    if (viewfinderBusy) return;
 
     int retval;
 
@@ -249,11 +255,11 @@ void bCamera::onViewfinderCameraFrameReady(QByteArray frame){
     emit frameReady(frame);
 }
 
-void bCamera::freeCam(void){
+void bCamera::freeCam(void) {
     camIsNikon = false;
     camIsCanon = false;
 
-    if(!camActive)return;
+    if (!camActive) return;
     
     deactivateLiveView();
     
@@ -264,7 +270,7 @@ void bCamera::freeCam(void){
 }
 
 bool bCamera::setUsbPower(unsigned int status) {
-    if(status == 0) {
+    if (status == 0) {
 
         qDebug() << "USB power off";
         usbSuspended = true;
@@ -272,9 +278,8 @@ bool bCamera::setUsbPower(unsigned int status) {
 //        freeUSB();
 
         usleep(1 * 1000 * 1000);
-        system("/usr/bin/devmem2 0x47401c60 b 0x00");
-    }
-    else {
+        system("/usr/bin/devmem2 0x47401c60 b 0x00");   //TODO first sleep , then set? Or the other way around?
+    } else {
         qDebug() << "USB power on";
         system("/usr/bin/devmem2 0x47401c60 b 0x01");
         usleep(1 * 1000 * 1000);
@@ -284,12 +289,12 @@ bool bCamera::setUsbPower(unsigned int status) {
     }
 
     qDebug() << "USB power done";
-    return(true);
+    return true;
 }
 
 unsigned int bCamera::getUsbPower(void) {
-    if(!camActive)return(0);
-    return(1);
+    if (!camActive) return 0;
+    return 1;
 }
 
 void bCamera::nullFocus() {
@@ -309,14 +314,6 @@ void bCamera::nullFocus() {
 //    deactivateLiveView();
 
     setConfig("viewfinder", "0", 2);
-}
-
-bCamera::~bCamera() {
-    camLookupTerminator = true;
-    camLookupThread->join();
-    
-    freeCam();
-    freeUSB();
 }
 
 void bCamera::focusUp() {
@@ -358,19 +355,19 @@ unsigned int bCamera::getFocusValue() {
 }
 
 void bCamera::initLiveView() {
-
+//TODO ?
 }
 
-void bCamera::setAutofocusarea(std::string value){
-    if(camActive)lvLoopThreaded->incBlockers();
-    if(setConfig("autofocusarea", value, 4)) {
+void bCamera::setAutofocusarea(std::string value) {
+    if (camActive) lvLoopThreaded->incBlockers();
+    if (setConfig("autofocusarea", value, 4)) {
         camInfo.autofocusarea = value;
     }
-    if(camActive)lvLoopThreaded->decBlockers();
+    if (camActive) lvLoopThreaded->decBlockers();
 }
 
 bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType, CameraEventType eventType, int eventTimeout, QString eventData) {
-    if(!camActive)return(false);
+    if (!camActive) return false;
     
     std::cout << "setting cam: " << key << "=" << val << "\r\n" << std::flush;
 
@@ -386,7 +383,7 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
         int busy_wait_retries = 0;
         do {
             ret = gp_camera_get_config (camera, &widget, context);
-            if(ret == GP_OK)continue;
+            if (ret == GP_OK) continue;
             std::cout << "cam busy, waiting\r\n" << std::flush;;
             usleep(0.1 * 1000 * 1000);
             busy_wait_retries++;
@@ -431,29 +428,28 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
             std::cout << "error: gp_widget_set_value\r\n" << std::flush;
             continue;
         }
-        
-        
+
         ret = gp_camera_set_config(camera, widget, context);
         
-        if(ret != GP_OK) {
+        if (ret != GP_OK) {
             std::cout << "error: gp_camera_set_config\r\n" << std::flush;
             continue;
         }
         
         s = true;
         
-    } while(false);
+    } while(false); // TODO ???
 
-    if( eventTimeout != 0 ) {
+    if (eventTimeout != 0) {
         CameraEventType	evtype;
         void *data;
         int retval;
 
-        for(int i=0; i<100; i++) {
+        for (int i=0; i<100; i++) {
             data = NULL;
             retval = gp_camera_wait_for_event(camera, eventTimeout, &evtype, &data, context);
             std::cout << "event caught: " << evtype << ", data: " << "hidden" << "\r\n" <<  std::flush;
-            if(data) {
+            if (data) {
                 std::cout << "data: " << (char*)data << "\r\n" <<  std::flush;
             }
 
@@ -476,7 +472,7 @@ bool bCamera::setConfig(std::string key, std::string val, unsigned int inputType
 
 //    lvLoopThreaded->start();
     
-    return(s);
+    return s;
 }
 
 void bCamera::onLvLoopEnd() {
@@ -512,7 +508,7 @@ void bCamera::onLvLoopStart() {
 }
 
 std::string bCamera::getConfig(std::string key, unsigned int inputType, bool getChoice) {
-    if(!camActive)return("");
+    if (!camActive) return("");
     
     int v_int;
     char v_char[20];
@@ -551,14 +547,14 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
     }
      */
     
-    if(inputType==5) {
+    if (inputType==5) {
         ret = gp_widget_get_value (child, &v_float);
     }
     else {
         ret = gp_widget_get_value (child, &wval);
     }
     
-    if(inputType==4) { //radio
+    if (inputType==4) { //radio
         int cnt = gp_widget_count_choices(child);
         for ( int i=0; i<cnt; i++) {
             const char *choice;
@@ -571,15 +567,13 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
         }
     }
     
-    if(inputType==5) {
+    if (inputType==5) {
         retVal = std::to_string((int)ceil(v_float));
-    }
-    else {
+    } else {
         retVal = std::string(wval);
     }
 
-       if(ret != GP_OK)return("");
-
+    if(ret != GP_OK)return("");
     
     std::cout << "got: " << retVal << "\r\n" << std::flush;
     
@@ -590,23 +584,21 @@ std::string bCamera::getConfig(std::string key, unsigned int inputType, bool get
     return retVal;
 }
 
-void bCamera::pauseLvLoop(){
+void bCamera::pauseLvLoop() {
     std::cout << "pausing LV loop\r\n" << std::flush;
-    if(pause) {
+    if (pause) {
         std::cout << "already paused\r\n" << std::flush;
         return;
     }
     
     isPaused = false;
-    
     pause = true;
-    while(!isPaused){};
+    while (!isPaused) {};
     std::cout << "paused LV loop\r\n" << std::flush;
 }
 
-void bCamera::unPauseLvLoop(){
+void bCamera::unPauseLvLoop() {
     std::cout << "unpausing LV loop\r\n" << std::flush;
-
     pause = false;
 }
 
@@ -625,7 +617,7 @@ QByteArray bCamera::captureLvFrame(void) {
     QByteArray a(cfData, size);
     retval = gp_file_unref (cf);
     a.append("--cutjpeg--");
-    return(a);
+    return a;
 }
 
 void bCamera::lvLoop() {
@@ -634,16 +626,15 @@ void bCamera::lvLoop() {
     int retval;    
     isPaused = false;
 
-    while(1){
-        if(terminator==true)break;
+    while(1) {
+        if (terminator==true) break;
         
-        if(pause==false) {
+        if (pause==false) {
             isPaused = false;
 
             QByteArray a = captureLvFrame();
             emit frameReady(a);
-       }
-        else {
+        } else {
             isPaused = true;
         }
         
@@ -655,23 +646,23 @@ void bCamera::lvLoop() {
 }
 
 bool bCamera::activateLiveView() {
-    if(!camActive)return(false);
+    if (!camActive) return(false);
 
     lvLoopThreaded->enable();
 
     lvActive = true;
     
-    return(true);
+    return true;
 }
 
 bool bCamera::deactivateLiveView() {
-    if(!camActive)return(false);
+    if (!camActive) return(false);
 
     lvLoopThreaded->disable();
 
     lvActive = false;
     
-    return(true);
+    return true;
 }
 
 bool bCamera::getLvActive() {
@@ -683,7 +674,7 @@ bool bCamera::getVfActive() {
 }
 
 void bCamera::captureGPIO(uint shutterSpeedMsec, uint holdMsec) {
-    if(camActive)lvLoopThreaded->incBlockers();
+    if (camActive) lvLoopThreaded->incBlockers();
 
     afPin->setValue(1);
     usleep(1000);
@@ -695,35 +686,35 @@ void bCamera::captureGPIO(uint shutterSpeedMsec, uint holdMsec) {
     srPin->setValue(0);
     afPin->setValue(0);
     
-    if(camActive)lvLoopThreaded->decBlockers();
+    if (camActive) lvLoopThreaded->decBlockers();
 
     usleep(shutterSpeedMsec * 1000);
 }
 
 void bCamera::afControl(float timeLimit) {
     int i = timeLimit / 0.1;
-    while(i--){
+    while (i--) {
         usleep(0.1 * 1000 * 1000);
-        if(afOn==false)return;
+        if (afOn==false) return;
     }
-    if(afOn==true)triggerAf(false);
+    if (afOn==true) triggerAf(false);
 }
 
 void bCamera::srControl(float timeLimit) {
     int i = timeLimit / 0.1;
-    while(i--){
+    while (i--) {
         usleep(0.1 * 1000 * 1000);
         if(srOn==false)return;
 
     }
-    if(srOn==true)triggerSr(false);
+    if (srOn==true) triggerSr(false);
 }
 
 void bCamera::triggerAf(bool value, float timeLimit) {
     std::cout << "trigger AF\r\n" << std::flush;
-    if(afOn==value)return;
-    if(value == true){
-        if(camActive)lvLoopThreaded->incBlockers();
+    if (afOn==value) return;
+    if (value == true) {
+        if (camActive) lvLoopThreaded->incBlockers();
         afPin->setValue(1);
         afOn = true;
         afControlThread = new std::thread( &bCamera::afControl, this, timeLimit );
@@ -731,7 +722,7 @@ void bCamera::triggerAf(bool value, float timeLimit) {
         return;
     }
     afPin->setValue(0);
-    if(camActive)lvLoopThreaded->decBlockers();
+    if (camActive) lvLoopThreaded->decBlockers();
     afOn = false;
 }
 
@@ -751,9 +742,9 @@ void bCamera::triggerSr(bool value, float timeLimit) {
 
 void bCamera::triggerSr(bool value, float timeLimit) {
     std::cout << "trigger SR\r\n" << std::flush;
-    if(srOn==value)return;
-    if(value == true){
-        if(camActive)lvLoopThreaded->incBlockers();
+    if (srOn == value) return;
+    if (value == true) {
+        if (camActive) lvLoopThreaded->incBlockers();
         srPin->setValue(1);
         srOn = true;
         srControlThread = new std::thread( &bCamera::srControl, this,  timeLimit);
@@ -761,19 +752,17 @@ void bCamera::triggerSr(bool value, float timeLimit) {
         return;
     }
     srPin->setValue(0);
-    if(camActive)lvLoopThreaded->decBlockers();
+    if (camActive) lvLoopThreaded->decBlockers();
     srOn = false;
 }
 
-
 void bCamera::capture() {
     CameraEventType	evtype;
-	void		*data;
-	int		retval;
-    CameraFilePath * 	path;
+    void * data;
+    int retval;
+    CameraFilePath * path;
     
     path = new CameraFilePath;
-
 
     retval =  gp_camera_capture	(camera, GP_CAPTURE_IMAGE, path, context );
     
@@ -789,12 +778,10 @@ void bCamera::capture() {
         if(evtype==GP_EVENT_CAPTURE_COMPLETE)break;
     }
 
-    
     if (retval != GP_OK) {
 		fprintf (stderr, "return from waitevent in trigger sample with %d\n", retval);
 	}
 }
-
 
 void bCamera::getCameraFile(std::string filename) {
     if (!camActive) return;
@@ -872,7 +859,7 @@ void bCamera::setCamParamS(std::string value) {
 }
 
 void bCamera::updateCamInfo(){
-    if(!camActive)return;
+    if (!camActive) return;
 
     std::cout << "getting cam info\r\n" << std::flush;
     
@@ -909,7 +896,7 @@ void bCamera::flushCamera(int downloadNumber, bool *camFlushTerminator) {
 
 
 void bCamera::downloadCameraDir(std::string dirname) {
-    if(!camActive)return;
+    if (!camActive) return;
     
     CameraList *dlist, *flist;
     gp_list_new (&flist);
@@ -1012,7 +999,7 @@ bool bCamera::deactivateViewfinderCam() {
 }
 
 bool bCamera::toggleLiveView() {
-    if(!lvActive) {
+    if (!lvActive) {
         deactivateViewfinderCam();
         return activateLiveView();
     }
@@ -1021,7 +1008,7 @@ bool bCamera::toggleLiveView() {
 }
 
 bool bCamera::toggleViewfinderCam() {
-    if(!vfActive) {
+    if (!vfActive) {
         deactivateLiveView();
         return activateViewfinderCam();
     }

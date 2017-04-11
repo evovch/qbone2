@@ -1,6 +1,15 @@
 #include "maintcpserver.h"
-#include "maintcpsocket.h"
+
+#include <iostream>
+
 #include <QDebug>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QThread>
+
+#include "btypes.h" // for tHash
+#include "bcontrol.h" // to enable 'connect'!
+#include "maintcpsocket.h"
 
 MainTcpServer::MainTcpServer(QObject *parent) :
     QObject(parent)
@@ -10,8 +19,8 @@ MainTcpServer::MainTcpServer(QObject *parent) :
     control = NULL;
 
     int rc = 0;
-    while(rc < 5) {
-        if(!server->listen(QHostAddress("127.0.0.1"), 60000))
+    while (rc < 5) {
+        if (!server->listen(QHostAddress("127.0.0.1"), 60000))
         {
             qDebug() << "MAIN server could not start";
             std::cout << "MAIN server could not start: " << server->errorString().toStdString() << "\r\n";
@@ -19,8 +28,7 @@ MainTcpServer::MainTcpServer(QObject *parent) :
             qDebug() << "MAIN server started!";
             std::cout << "MAIN server started\r\n";
 
-            QObject::connect(server, SIGNAL(newConnection()),
-                    this, SLOT(_onNewConnection()));
+            QObject::connect(server, SIGNAL(newConnection()), this, SLOT(_onNewConnection()));
             return;
         }
 
@@ -33,19 +41,11 @@ MainTcpServer::MainTcpServer(QObject *parent) :
     std::cout << "giving up on network\r\n";
 }
 
-void MainTcpServer::setCamera(bCamera *cam) {
-    camera = cam;
-}
-
-void MainTcpServer::setControl(bControl *ctl) {
-    control = ctl;
-}
-
 void MainTcpServer::_onNewConnection(void)
 {
-    qDebug() << "incoming MAIN conection";
-    QTcpSocket *socket = server->nextPendingConnection();
-    MainTcpSocket *mainsocket = new MainTcpSocket(socket);
+    qDebug() << "Incoming MAIN conection";
+    QTcpSocket* socket = server->nextPendingConnection();
+    MainTcpSocket* mainsocket = new MainTcpSocket(socket);
 
     QObject::connect(control, SIGNAL(dataReady(tHash)), mainsocket, SLOT(onDataReady(tHash)));
     QObject::connect(mainsocket, SIGNAL(newCall(tHash)), control, SLOT(onNewCall(tHash)));
@@ -53,16 +53,13 @@ void MainTcpServer::_onNewConnection(void)
     currentConnectionsCount++;
     mainsocket->connNo = currentConnectionsCount;
 
-    if(control != NULL)control->setCurrentConnectionsCount(currentConnectionsCount);
+    if (control != NULL) control->setCurrentConnectionsCount(currentConnectionsCount);
 
     QObject::connect(socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 }
 
-void MainTcpServer::onDisconnected(void) {
+void MainTcpServer::onDisconnected(void)
+{
     currentConnectionsCount--;
-     if(control != NULL)control->setCurrentConnectionsCount(currentConnectionsCount);
-}
-
-int MainTcpServer::currentConnections(void) {
-    return currentConnectionsCount;
+    if (control != NULL) control->setCurrentConnectionsCount(currentConnectionsCount);
 }

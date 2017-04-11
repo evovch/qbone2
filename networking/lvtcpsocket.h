@@ -1,9 +1,8 @@
 #ifndef LVTCPSOCKET_H
 #define LVTCPSOCKET_H
 
+#include <QObject>
 #include <QByteArray>
-
-#include "bcamera.h"
 
 class QTcpSocket;
 
@@ -16,7 +15,7 @@ public:
     //TODO destructor?
 
 private:
-    QTcpSocket *socket;
+    QTcpSocket* socket;
 
 signals:
     
